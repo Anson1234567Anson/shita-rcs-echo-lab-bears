@@ -1,0 +1,1380 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fffaf0"><style>:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<title>Shita RCS Echo Lab · Bubu &amp; Dudu Edition</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shita RCS">
+<meta name="format-detection" content="telephone=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,800;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: storybook sky — a cream study column under a pastel sky, chunky ink outlines and sticker shadows; a soft grassy hill anchors the rail. */
+:root{
+  --sky:#a9dfe4; --sky-2:#d8f1f2; --cream:#fffaf0; --butter:#f7dc8a; --cocoa:#b98a68; --blush:#f5b5b5; --grass:#c3e3a5; --ink:#3b2a24; --cloud:#ffffff;
+  --bg:#fffaf0; --panel:#ffffff; --panel-2:#f4ecdf; --line:#e3d5c4;
+  --fg:#3b2a24; --muted:#7a6457; --faint:#a8968a;
+  --away:#2c8590; --away-soft:#dcf2f3; --toward:#cf4f63; --toward-soft:#fde4e4;
+  --ok:#3d8a46; --ok-soft:#e5f4d8; --warn:#a46d0a; --warn-soft:#fdf1cc;
+  --bmode:#3b2a24; --shadow:#3b2a24;
+  --f-display:"Fredoka","Baloo 2","Varela Round",system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  --f-zh:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --sky:#1f3c52; --sky-2:#18303f; --cream:#1a1714; --butter:#e2c26a; --cocoa:#c99a76; --blush:#e79a9a; --grass:#4f7a43; --ink:#f3e7d6; --cloud:#33536a;
+  --bg:#171412; --panel:#221d19; --panel-2:#2c2621; --line:#433a32;
+  --fg:#f6ecdf; --muted:#c9b7a6; --faint:#8e7d6f;
+  --away:#7fd3db; --away-soft:#163a40; --toward:#f59aa6; --toward-soft:#43232a;
+  --ok:#9bd38a; --ok-soft:#203a1d; --warn:#f2c867; --warn-soft:#3d3014;
+  --bmode:#f3e7d6; --shadow:#0a0807; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --sky:#1f3c52; --sky-2:#18303f; --cream:#1a1714; --butter:#e2c26a; --cocoa:#c99a76; --blush:#e79a9a; --grass:#4f7a43; --ink:#f3e7d6; --cloud:#33536a;
+  --bg:#171412; --panel:#221d19; --panel-2:#2c2621; --line:#433a32;
+  --fg:#f6ecdf; --muted:#c9b7a6; --faint:#8e7d6f;
+  --away:#7fd3db; --away-soft:#163a40; --toward:#f59aa6; --toward-soft:#43232a;
+  --ok:#9bd38a; --ok-soft:#203a1d; --warn:#f2c867; --warn-soft:#3d3014;
+  --bmode:#f3e7d6; --shadow:#0a0807; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--f-display);font-stretch:85%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.12rem;font-weight:700}
+h4{font-size:.98rem;font-weight:700}
+p{margin:0}
+a{color:var(--away)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--away);outline-offset:2px}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--f-display);font-stretch:100%;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;font-weight:700;color:var(--muted)}
+.zh{font-family:var(--f-zh);color:var(--muted);font-size:.92em}
+body:not(.show-zh) .zh{display:none}
+
+/* shell */
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;height:100vh;padding:22px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px;background:var(--panel)}
+.brand{display:flex;flex-direction:column;gap:8px}
+.brand-name{font-family:var(--f-display);font-weight:800;font-stretch:75%;font-size:1.55rem;letter-spacing:.01em;line-height:1}
+.brand-sub{font-size:.78rem;color:var(--muted)}
+.scale{display:flex;align-items:stretch;gap:6px;font-family:var(--f-mono);font-size:.62rem;color:var(--muted)}
+.scale-bar{width:10px;border-radius:2px;background:linear-gradient(180deg,#ffe36b 0%,#ff5a3c 22%,#8a1410 48%,#0d0d0d 50%,#0c2a78 52%,#2f6bff 78%,#7fe6ff 100%)}
+.scale-ticks{display:flex;flex-direction:column;justify-content:space-between}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-radius:8px;text-decoration:none;color:var(--fg);font-weight:700;font-size:.94rem}
+.nav a:hover{background:var(--panel-2)}
+.nav a[aria-current="page"]{background:var(--away-soft);color:var(--away)}
+.nav .k{font-family:var(--f-mono);font-size:.7rem;color:var(--faint);font-weight:400}
+.rail-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.88rem}
+.switch{position:relative;width:38px;height:22px;flex:none}
+.switch input{opacity:0;position:absolute;inset:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:20px;background:var(--line);transition:.2s}
+.switch span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;border-radius:50%;background:var(--panel);transition:.2s}
+.switch input:checked+span{background:var(--away)}
+.switch input:checked+span::after{transform:translateX(16px)}
+.switch input:focus-visible+span{outline:2px solid var(--away);outline-offset:2px}
+.sync{font-size:.74rem;color:var(--faint)}
+
+main{padding-inline:clamp(16px,4vw,48px);padding-block:28px 80px;min-width:0}
+.view{max-width:980px;display:flex;flex-direction:column;gap:22px}
+.view-head{display:flex;flex-direction:column;gap:6px}
+.view-head p{color:var(--muted);max-width:68ch}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.btn{text-decoration:none;color:var(--fg);display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:.92rem}
+.btn:hover{border-color:var(--away)}
+.btn.primary{background:var(--away);border-color:var(--away);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0c1118}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0c1118}}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:700;cursor:pointer}
+a.chip{text-decoration:none;color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:.74rem;font-weight:700;font-family:var(--f-display);letter-spacing:.04em;text-transform:uppercase}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--toward-soft);color:var(--toward)}
+.pill.info{background:var(--away-soft);color:var(--away)}
+
+/* dashboard */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.fact{background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.fact b{font-family:var(--f-display);font-stretch:75%;font-size:1.9rem;font-weight:800;line-height:1}
+.fact span{font-size:.8rem;color:var(--muted)}
+.bp{display:flex;flex-direction:column;gap:14px}
+.bp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+.bp-name{font-weight:700;font-size:.95rem}
+.bp-pct{font-family:var(--f-mono);font-size:.85rem}
+.bp-track{grid-column:1/-1;height:12px;border-radius:5px;background:transparent;position:relative;overflow:hidden}
+.bp-w{position:absolute;inset:0 auto 0 0;background:var(--away-soft);border:1px solid var(--away);border-radius:5px}
+.bp-p{position:absolute;inset:0 auto 0 0;height:100%;background:var(--away);border-radius:5px}
+.bp-meta{grid-column:1/-1;font-size:.78rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* notes */
+.domain-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc a{font-size:.82rem;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--fg);background:var(--panel)}
+.toc a.done{border-color:var(--ok);color:var(--ok)}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:16px}
+.sec-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.sec-head .zh{display:block;font-size:.9rem;margin-top:3px}
+.bul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:8px;max-width:76ch}
+.bul li::marker{color:var(--away)}
+.bul .zh{display:block;margin-top:1px}
+.callout{border-radius:8px;padding:10px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:3px}
+.callout.pearl{background:var(--ok-soft)}
+.callout.pit{background:var(--toward-soft)}
+.callout .label{color:inherit;opacity:.85}
+.callout.pearl .label{color:var(--ok)} .callout.pit .label{color:var(--toward)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel-2);font-family:var(--f-display);font-stretch:90%;font-weight:700;font-size:.82rem;letter-spacing:.02em}
+td{font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+td.sev{color:var(--toward);font-weight:700}
+.cite{font-size:.76rem;color:var(--faint)}
+.check{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap}
+.check input{width:17px;height:17px;accent-color:var(--ok)}
+
+/* widgets */
+.widget{border:1px dashed var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.widget svg{display:block;max-width:100%;height:auto}
+.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px 18px}
+.ctrl label{display:flex;flex-direction:column;gap:3px;font-size:.84rem;font-weight:700}
+.ctrl output{font-family:var(--f-mono);font-weight:400;color:var(--away)}
+input[type=range]{width:100%;accent-color:var(--away)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:8px}
+.ro{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.ro b{display:block;font-family:var(--f-mono);font-size:1.05rem}
+.ro span{font-size:.74rem;color:var(--muted)}
+.ro.hot b{color:var(--toward)}
+.seg{cursor:pointer;stroke:var(--panel);stroke-width:1.5}
+.seg:hover{opacity:.85}
+.tree-node{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.tree-path{display:flex;flex-wrap:wrap;gap:6px;font-size:.8rem}
+.tree-path span{background:var(--panel-2);border-radius:5px;padding:2px 8px}
+
+/* calculators */
+.calc{display:flex;flex-direction:column;gap:12px}
+.calc .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:10px}
+.calc label{display:flex;flex-direction:column;gap:3px;font-size:.8rem;font-weight:700;color:var(--muted)}
+.calc input{border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:7px 9px;font-family:var(--f-mono);width:100%}
+.result{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.result b{font-family:var(--f-display);font-stretch:80%;font-size:1.8rem;font-weight:800}
+.steps{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);background:var(--bg);border-radius:7px;padding:9px 11px;white-space:pre-wrap;overflow-x:auto}
+.formula{font-family:var(--f-mono);font-size:.86rem;color:var(--away)}
+
+/* flashcards */
+.card-stage{perspective:1200px}
+.fcard{position:relative;min-height:260px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s}
+.fcard.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:auto}
+.face.back{transform:rotateY(180deg)}
+.face .q{font-family:var(--f-display);font-stretch:90%;font-size:1.35rem;font-weight:700;line-height:1.25}
+.face .a{font-size:1.08rem}
+.face .meta{position:absolute;top:12px;left:16px;right:16px;display:flex;justify-content:space-between}
+.srs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.srs .btn{display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px}
+.srs .btn small{font-weight:400;color:var(--muted);font-size:.74rem}
+@media (prefers-reduced-motion: reduce){.fcard{transition:none}}
+
+/* quiz */
+.q-stem{font-size:1.08rem;font-weight:700;max-width:72ch}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:9px;padding:11px 13px;cursor:pointer;width:100%}
+.opt:hover{border-color:var(--away)}
+.opt .key{font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--line);border-radius:5px;padding:0 6px;color:var(--muted);flex:none;margin-top:2px}
+.opt[aria-pressed="true"]{border-color:var(--away);background:var(--away-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--toward);background:var(--toward-soft)}
+.explain{border-left:3px solid var(--away);padding:8px 14px;background:var(--panel-2);border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:6px;font-size:.94rem}
+.match{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 14px}
+.match .term{font-weight:700;font-size:.92rem;align-self:center}
+.match select{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:7px;width:100%}
+.match select.right{border-color:var(--ok)} .match select.wrong{border-color:var(--toward)}
+.qbar{height:5px;background:var(--panel-2);border-radius:3px;overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--away)}
+.timer{font-family:var(--f-mono);font-size:.9rem}
+
+/* cheat sheet */
+.cheat{columns:2 340px;column-gap:18px}
+.cheat .panel{break-inside:avoid;margin-bottom:14px;padding:14px}
+.cheat table{min-width:0;font-size:.82rem}
+.cheat th,.cheat td{padding:4px 7px}
+
+/* phone */
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:5;flex-direction:row;align-items:center;padding:10px 16px;gap:12px;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto}
+  .brand .brand-sub,.brand .scale,.rail-foot .sync{display:none}
+  .brand-name{font-size:1.2rem;white-space:nowrap}
+  .nav{flex-direction:row;gap:2px}
+  .nav a{padding:7px 9px;font-size:.86rem;white-space:nowrap}
+  .nav .k{display:none}
+  .rail-foot{margin-top:0;flex-direction:row}
+  .toggle .lbl{display:none}
+  main{padding-block:20px 60px}
+  h1{font-size:1.55rem}
+  .sec{padding:16px}
+}
+
+/* ---- storybook theme layer ---- */
+h1,h2,h3,h4,.brand-name,.fact b,.result b,.face .q{font-stretch:normal;letter-spacing:0}
+h1{font-weight:700;font-size:2rem} h2{font-weight:700} h3,h4{font-weight:600}
+.label{font-stretch:normal;font-weight:600;letter-spacing:.06em}
+body{background:var(--bg)}
+main{background:linear-gradient(180deg,var(--sky) 0,var(--sky-2) 180px,var(--bg) 340px);position:relative}
+main::before{content:"";position:absolute;inset:18px 0 auto 0;height:120px;pointer-events:none;opacity:.95;
+ background:radial-gradient(circle at 78% 52%,var(--cloud) 0 26px,transparent 27px),radial-gradient(circle at 83% 40%,var(--cloud) 0 34px,transparent 35px),radial-gradient(circle at 89% 54%,var(--cloud) 0 24px,transparent 25px),radial-gradient(ellipse 70px 20px at 84% 62%,var(--cloud) 0 98%,transparent),
+ radial-gradient(circle at 55% 22%,var(--cloud) 0 14px,transparent 15px),radial-gradient(circle at 58.5% 15%,var(--cloud) 0 18px,transparent 19px),radial-gradient(circle at 62% 23%,var(--cloud) 0 12px,transparent 13px)}
+main>.view{position:relative}
+.rail{background:var(--cream);border-right:2px solid var(--ink);overflow:hidden}
+.rail::after{content:"";position:absolute;left:-30%;right:-30%;bottom:-70px;height:150px;border-radius:50%;background:var(--grass);border-top:2px solid var(--ink);z-index:0}
+.rail>*{position:relative;z-index:1}
+.brand-name{font-weight:700;font-size:1.5rem;line-height:1.05;color:var(--fg)}
+.brand-name span{display:block;font-size:.95rem;color:var(--cocoa);font-weight:600}
+.brand-mark{display:flex;gap:6px;align-items:center}
+.brand-mark i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);display:block}
+.nav a{border-radius:14px;font-family:var(--f-display);font-weight:600;border:2px solid transparent}
+.nav a:hover{background:var(--panel-2)}
+.nav a[aria-current="page"]{background:var(--butter);color:var(--ink);border-color:var(--ink);box-shadow:2px 2px 0 var(--shadow)}
+:root[data-theme="dark"] .nav a[aria-current="page"]{color:#2b1f1a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .nav a[aria-current="page"]{color:#2b1f1a}}
+.panel,.sec,.facts,.face,.tree-node{border:2px solid var(--ink);border-radius:var(--r);box-shadow:4px 4px 0 var(--shadow)}
+.facts{gap:2px;background:var(--ink)}
+.fact b{font-family:var(--f-display);font-weight:700;color:var(--cocoa)}
+.ro{border:2px solid var(--line);border-radius:14px}
+.widget{border:2px dashed var(--cocoa);border-radius:var(--r);background:var(--cream)}
+.btn{border:2px solid var(--ink);border-radius:999px;font-family:var(--f-display);font-weight:600;box-shadow:2px 2px 0 var(--shadow);transition:transform .08s,box-shadow .08s}
+.btn:hover{border-color:var(--ink);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--shadow)}
+.btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--shadow)}
+.btn.primary{background:var(--cocoa);border-color:var(--ink);color:#fffaf0}
+.chip{border:2px solid var(--ink);font-family:var(--f-display);font-weight:600}
+.chip[aria-pressed="true"]{background:var(--sky);color:var(--ink);border-color:var(--ink)}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{background:var(--away);color:#14262a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{background:var(--away);color:#14262a}}
+.pill{font-family:var(--f-display);font-weight:600;letter-spacing:.03em;border:1.5px solid currentColor}
+.toc a{border:2px solid var(--line);border-radius:999px;padding:3px 11px}
+.toc a.done{background:var(--ok-soft)}
+.tbl-wrap{border:2px solid var(--line);border-radius:14px}
+th{background:var(--butter);color:#3b2a24;font-family:var(--f-display);font-stretch:normal;font-weight:600}
+.callout{border-radius:14px;border:2px solid currentColor}
+.callout.pearl{color:var(--ok)} .callout.pit{color:var(--toward)}
+.callout>span:not(.label){color:var(--fg)}
+.opt{border:2px solid var(--line);border-radius:14px}
+.bp-track{height:14px}
+.bp-w{background:var(--sky-2);border:2px solid var(--ink);border-radius:999px}
+.bp-p{background:var(--cocoa);border-radius:999px}
+.qbar{height:10px;border:2px solid var(--ink);border-radius:999px;background:var(--cream)}
+.qbar i{background:var(--blush)}
+.switch input:checked+span{background:var(--cocoa)}
+.calc input,.match select{border:2px solid var(--line);border-radius:12px}
+input[type=range]{accent-color:var(--cocoa)}
+.face{border-radius:22px}
+.face.back{background:var(--cream)}
+.explain{border-left:4px solid var(--blush);border-radius:0 14px 14px 0}
+.formula{color:var(--cocoa)}
+@media (max-width:820px){.rail::after{display:none}.rail{border-right:0;border-bottom:2px solid var(--ink)}}
+@media (hover:hover){.cite.swipe{display:none}}
+@media (hover:none){.cite.keys{display:none}}
+
+/* ---- H5 (iPhone) layer: top app bar + bottom tab bar ---- */
+html{-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+.app{display:block;min-height:100%}
+.rail{display:none}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:var(--cream);border-bottom:2px solid var(--ink)}
+.topbar .brand-name{font-size:1.15rem;display:flex;align-items:baseline;gap:6px}
+.topbar .brand-name span{display:inline;font-size:.8rem}
+.topbar .toggle{font-size:.8rem;gap:6px}
+.topbar .toggle .lbl{display:inline}
+main{padding-inline:16px;padding-block:18px calc(96px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,var(--sky) 0,var(--sky-2) 140px,var(--bg) 260px)}
+main::before{height:90px;inset:6px 0 auto 0}
+.view{gap:16px}
+h1{font-size:1.6rem}
+h2{font-size:1.25rem}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--cream);border-top:2px solid var(--ink);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:50px;border-radius:14px;text-decoration:none;color:var(--muted);font-family:var(--f-display);font-weight:600;font-size:.72rem;border:2px solid transparent}
+.tabbar a svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tabbar a[aria-current="page"]{color:var(--ink);background:var(--butter);border-color:var(--ink);box-shadow:none}
+:root[data-theme="dark"] .tabbar a[aria-current="page"]{color:#2b1f1a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabbar a[aria-current="page"]{color:#2b1f1a}}
+.btn,.chip{min-height:44px}
+.chip{padding:8px 14px}
+.opt{min-height:52px;padding:13px 14px;font-size:1rem}
+.calc input,.match select,input[type=date]{font-size:16px!important;min-height:44px}
+.domain-tabs,.toc,.view>.row[role=group],.panel .row[role=group]{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.domain-tabs::-webkit-scrollbar,.toc::-webkit-scrollbar,.row[role=group]::-webkit-scrollbar{display:none}
+.domain-tabs>*,.toc>*,.row[role=group]>*{flex:none;white-space:nowrap}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 54px);z-index:10;background:var(--bg);padding-block:6px;margin-inline:-16px;padding-inline:16px}
+.toc a{padding:7px 12px}
+.sec{padding:16px}
+.facts{grid-template-columns:1fr 1fr}
+.fcard{min-height:46vh;touch-action:pan-y}
+#cStats{grid-template-columns:repeat(4,1fr);gap:6px}#cStats .ro{padding:6px 8px}#cStats .ro b{font-size:.95rem}#cStats .ro span{font-size:.66rem;line-height:1.2;display:block}
+.face{padding:22px}
+.face .q{font-size:1.5rem}
+.srs .btn{min-height:56px}
+.cheat{columns:1}
+.h5-tools{display:flex;gap:8px}
+.cite.keys{display:none}
+@media (min-width:700px){main{max-width:720px;margin-inline:auto}}
+</style>
+<style>
+/* Bubu & Dudu bear theme override */
+:root:not([data-theme="dark"]){--sky:#bfe6f7;--sky-2:#e3f4fc;--cream:#fff7f0;--butter:#ffe1a8;--cocoa:#a9785a;--blush:#ffc2cf;--grass:#cdebb4;--bg:#fff7f3;--panel:#ffffff;--panel-2:#fdeee9;--line:#f1d6cf;--away:#3b8fb8;--toward:#e0677f;--r:24px}
+html,body{background:linear-gradient(180deg,#e3f4fc 0,#fff7f3 420px) fixed}
+.panel,.fact,.widget{border-radius:24px!important}
+.bear-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:center;background:#fff;border:3px solid #f6c9d3;border-radius:28px;padding:14px;margin:0 0 18px;box-shadow:0 6px 0 #f6c9d3}
+.bear-hero img{width:100%;border-radius:20px;display:block}
+.bear-hero h2{color:#a9785a}.bear-hero p{color:#7a6457;margin-top:6px}
+.bear-hugs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.bear-hugs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:22px;border:3px solid #ffd9e1;background:#f0f0f0;transition:transform .2s}
+.bear-hugs img:hover{transform:rotate(-3deg) scale(1.04)}
+@media(max-width:720px){.bear-hero{grid-template-columns:1fr}}
+</style>
+<div class="app">
+  <aside class="rail"></aside>
+  <header class="topbar">
+    <div class="brand-name">Shita<span>RCS Echo Lab</span></div>
+    <label class="toggle"><span class="switch"><input type="checkbox" id="zhToggle" checked><span></span></span><span class="lbl">中文</span></label>
+  </header>
+  <main id="main"></main>
+  <nav class="nav tabbar" aria-label="Study modes">
+    <a href="#dash" data-v="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg>Home</a>
+    <a href="#notes" data-v="notes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h7M9 14h7"/></svg>Notes</a>
+    <a href="#cards" data-v="cards"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="13" height="14" rx="2"/><path d="M8 3h10a2 2 0 0 1 2 2v12"/></svg>Cards</a>
+    <a href="#quiz" data-v="quiz"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14"/><path d="M12 17.5v.01"/></svg>Quiz</a>
+    <a href="#calc" data-v="calc" data-also="cheat"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg>Tools</a>
+  </nav>
+  <div id="syncState" hidden></div>
+</div>
+<script>
+window.addEventListener("error",function(e){try{var m=document.getElementById("main");if(m&&!m.firstElementChild){m.innerHTML='<div style="padding:16px;border:2px solid #cf4f63;border-radius:14px;background:#fde4e4;color:#3b2a24"><b>Something stopped the app from loading.</b><br>'+String(e.message||e.error||"Unknown error").replace(/</g,"&lt;")+'</div>'}}catch(_){}});
+</script>
+<script>
+(function(){
+const DOMAINS=[
+ {id:"D",name:"Anatomy, Physiology & Hemodynamics",short:"Anatomy & hemodynamics",zh:"解剖、生理與血流動力學",w:29},
+ {id:"C",name:"Valvular Findings",short:"Valves",zh:"瓣膜評估",w:25},
+ {id:"B",name:"Performing Echo Imaging",short:"Imaging",zh:"執行心臟超聲檢查",w:24},
+ {id:"E",name:"Ultrasound Physics",short:"Physics",zh:"超聲物理",w:13},
+ {id:"A",name:"Preparation & Non-imaging Tasks",short:"Preparation",zh:"檢查準備與非影像職責",w:9}
+];
+const NOTES={};
+NOTES.D=[
+{id:"d-chambers",t:"Chamber size & normal values",zh:"心腔大小與正常值",blocks:[
+ {b:[["Measure LV linear dimensions in PLAX at end-diastole (frame after MV closure, or largest LV), perpendicular to the long axis, at the MV leaflet tips.","LV 線性測量：PLAX、舒張末期、垂直長軸、於二尖瓣瓣尖水平。"],
+     ["LVEF by biplane Simpson's (method of discs) from A4C + A2C is the ASE-preferred 2D method. Avoid foreshortening: the apex should be thin and not move toward the base.","LVEF 首選雙平面 Simpson 法（A4C + A2C）。避免心尖縮短（foreshortening）。"],
+     ["LA volume index (LAVI) is measured at end-systole (frame before MV opens), biplane area-length or discs, excluding the LAA and pulmonary veins.","LAVI 於收縮末期（二尖瓣開啟前）測量，不包括左心耳及肺靜脈。"],
+     ["RV size: RV-focused apical 4-chamber view. Basal diameter >41 mm or mid >35 mm = dilated.","右心室大小：使用 RV-focused A4C。基底徑 >41 mm 或中段 >35 mm 為擴大。"]]},
+ {table:{head:["Parameter","Normal","Abnormal / note"],rows:[
+  ["LVEF (biplane)","≥52% ♂ · ≥54% ♀","41–51/53 mild ↓ · 30–40 moderate · <30 severe"],
+  ["LVIDd","42–58 mm ♂ · 38–52 mm ♀","Index to BSA when body size is extreme"],
+  ["IVSd / LVPWd","0.6–1.0 cm ♂ · 0.6–0.9 cm ♀","≥1.5 cm suggests HCM"],
+  ["Relative wall thickness","≤0.42","RWT = 2×PWd / LVIDd"],
+  ["LV mass index (linear)","≤115 g/m² ♂ · ≤95 g/m² ♀","↑mass + RWT>0.42 = concentric hypertrophy"],
+  ["LAVI","≤34 mL/m²","35–41 mild · 42–48 moderate · >48 severe"],
+  ["RV basal diameter","≤41 mm","RV-focused A4C"],
+  ["TAPSE","≥17 mm","<17 mm = RV systolic dysfunction"],
+  ["RV S′ (TDI)","≥9.5 cm/s","<9.5 cm/s abnormal"],
+  ["RV FAC","≥35%","<35% abnormal"],
+  ["RV free wall thickness","≤5 mm",">5 mm = RVH (subcostal)"],
+  ["RA area","≤18 cm²","Measured end-systole, A4C"],
+  ["GLS (speckle tracking)","≈ −20% (more negative than −18%)","Less negative than −16% = abnormal"]],cite:"ASE/EACVI Chamber Quantification 2015; ASE strain consensus. Values are adult reference ranges."}},
+ {table:{head:["IVC diameter","Sniff collapse","Estimated RAP"],rows:[
+  ["≤2.1 cm",">50%","3 mmHg (0–5)"],["≤2.1 cm","<50%","8 mmHg (5–10)"],[">2.1 cm",">50%","8 mmHg (5–10)"],[">2.1 cm","<50%","15 mmHg (10–20)"]],cite:"ASE Right Heart guideline 2010 / Chamber Quantification 2015."}},
+ {pearl:["Concentric remodeling = normal mass + RWT >0.42. Eccentric hypertrophy = ↑mass + RWT ≤0.42 (volume overload: AR, MR).","向心性重構：質量正常但 RWT >0.42；離心性肥厚：質量增加、RWT ≤0.42（容量負荷，如 AR、MR）。"]},
+ {pit:["Do not measure the IVC in ventilated patients to estimate RAP — positive pressure ventilation dilates it.","使用呼吸機的病人不可用 IVC 估計 RAP，正壓通氣會令 IVC 擴張。"]}
+]},
+{id:"d-systolic",t:"Systolic function, wall motion & ischemia",zh:"收縮功能、室壁運動與缺血",blocks:[
+ {b:[["Use the ASE 17-segment model: 6 basal, 6 mid, 4 apical and the apical cap (segment 17).","使用 ASE 17 節段模型：基底 6、中段 6、心尖 4 及心尖帽（第 17 段）。"],
+     ["Wall-motion score: 1 normal/hyperkinetic, 2 hypokinetic, 3 akinetic, 4 dyskinetic (aneurysmal is often scored 4 or 5). WMSI = sum of scores ÷ segments scored; 1.0 = normal.","室壁運動評分：1 正常、2 運動減弱、3 無運動、4 反常運動。WMSI = 總分 ÷ 節段數，1.0 為正常。"],
+     ["Judge wall motion on BOTH endocardial excursion and myocardial thickening. Tethering from a neighbouring segment can make a dead segment move.","同時評估心內膜位移和心肌增厚；鄰近節段牽拉可令無運動節段看似會動。"],
+     ["Click a segment below to see its coronary territory and which views show it.","點擊下方節段查看其冠狀動脈分佈及相應切面。"]]},
+ {widget:"bullseye"},
+ {table:{head:["Post-MI complication","Echo clue","Classic location"],rows:[
+  ["LV thrombus","Echodense mass in an akinetic apex; use contrast if unsure","Apex (LAD infarct)"],
+  ["True aneurysm","Wide neck, thinned dyskinetic wall, all three layers","Apex / anterior"],
+  ["Pseudoaneurysm","Narrow neck (neck:max diameter <0.5), contained rupture, to-and-fro flow","Inferior / posterolateral"],
+  ["Post-MI VSD","Left-to-right systolic jet across septum; new holosystolic murmur","Apical septum (LAD) or basal inferoseptum (RCA)"],
+  ["Papillary muscle rupture","Flail leaflet with mass attached, acute severe MR","Posteromedial (single supply: PDA)"],
+  ["Free wall rupture","Pericardial effusion with tamponade, echodense clot","Lateral wall"],
+  ["RV infarct","RV dilation and hypokinesis with inferior MI","RCA proximal"]]}},
+ {pearl:["The posteromedial papillary muscle ruptures more often because it has a single blood supply (PDA). The anterolateral has dual supply (LAD + LCx).","後內側乳頭肌只有單一血供（PDA），因此較易斷裂；前外側乳頭肌有 LAD 及 LCx 雙重血供。"]},
+ {b:[["dP/dt from the MR CW jet: time for velocity to rise from 1 to 3 m/s (32 mmHg change). dP/dt = 32 ÷ time (s). Normal >1200 mmHg/s; <800 mmHg/s = severely reduced.","dP/dt：MR 連續波由 1 至 3 m/s 的時間；dP/dt = 32 ÷ 時間（秒）。正常 >1200 mmHg/s，<800 為嚴重下降。"],
+     ["Myocardial performance (Tei) index = (IVCT + IVRT) ÷ ET. Higher = worse. LV normal ≈ <0.40; RV (PW) >0.43 or (TDI) >0.54 abnormal.","心肌功能（Tei）指數 =（IVCT + IVRT）÷ 射血時間，數值越高越差。"],
+     ["Cardio-oncology: a relative GLS fall of >15% from baseline suggests subclinical cardiotoxicity.","腫瘤心臟學：GLS 較基線相對下降 >15% 提示亞臨床心臟毒性。"]]}
+]},
+{id:"d-diastolic",t:"Diastolic function & filling pressures",zh:"舒張功能與充盈壓",blocks:[
+ {b:[["Mitral inflow (PW at leaflet tips, A4C): E, A, E/A ratio, deceleration time (DT). IVRT measured with CW/PW between LVOT and inflow.","二尖瓣血流（PW 置於瓣尖）：E、A、E/A、減速時間 DT；IVRT 在 LVOT 與流入道之間測量。"],
+     ["Tissue Doppler e′ at septal and lateral annulus. Abnormal: septal e′ <7 cm/s, lateral e′ <10 cm/s. Average E/e′ >14 = raised filling pressure.","組織多普勒 e′：中隔 <7 cm/s、側壁 <10 cm/s 為異常；平均 E/e′ >14 表示充盈壓升高。"],
+     ["Pulmonary vein flow (S, D, Ar): S &lt; D and Ar duration − A duration >30 ms suggest raised LVEDP.","肺靜脈血流：S &lt; D 及 Ar 時長 − A 時長 >30 ms 提示 LVEDP 升高。"],
+     ["Valsalva: a pseudonormal pattern reverts toward impaired relaxation (E/A falls ≥50%) when filling pressure is high.","Valsalva：假性正常型態在充盈壓高時會轉為鬆弛受損（E/A 下降 ≥50%）。"]]},
+ {table:{head:["Grade","E/A","DT","Avg E/e′","LAP"],rows:[
+  ["Normal","0.8–2","160–220 ms","<10 (≤14)","Normal"],
+  ["I — impaired relaxation","≤0.8 (E ≤50 cm/s)",">200 ms","<10","Normal"],
+  ["II — pseudonormal",">0.8 to <2","160–200 ms","10–14+","↑"],
+  ["III — restrictive","≥2","<160 ms",">14","↑↑"]],cite:"ASE/EACVI Diastolic Function 2016. ASE published an updated diastolic guideline in 2025; check which version your exam references."}},
+ {widget:"diastolic"},
+ {pit:["In AF, mitral annular calcification, significant MR/MS, prosthetic MV or LVAD the standard algorithm does not apply.","房顫、二尖瓣環鈣化、明顯 MR/MS、人工二尖瓣或 LVAD 時，標準流程不適用。"]}
+]},
+{id:"d-cm",t:"Cardiomyopathies",zh:"心肌病",blocks:[
+ {table:{head:["Type","Key echo findings","Watch for"],rows:[
+  ["Hypertrophic (HCM)","Wall ≥15 mm (≥13 mm with family history), asymmetric septal; SAM; dagger-shaped late-peaking LVOT CW; mid-systolic AV notching","LVOT gradient ≥30 mmHg obstruction, ≥50 mmHg significant (rest or provoked: Valsalva, standing, amyl nitrite). MR is posteriorly directed"],
+  ["Apical HCM","Spade-shaped LV cavity in diastole, apical thickening; deep T-wave inversion on ECG","Use contrast to see the apex; apical aneurysm"],
+  ["Dilated (DCM)","Dilated spherical LV, global hypokinesis, low EF, functional MR, LV thrombus","Sphericity, restrictive filling = poor prognosis"],
+  ["Restrictive / amyloid","Thick walls with low ECG voltage, granular 'sparkling' myocardium, biatrial enlargement, thick valves & IAS, small effusion","Apical-sparing GLS bull's-eye ('cherry on top'); restrictive filling, low e′"],
+  ["LV non-compaction","Two-layer myocardium, deep trabecular recesses filling with colour; non-compacted:compacted >2 in systole (Jenni)","Thrombus, arrhythmia; contrast helps"],
+  ["Takotsubo (stress)","Apical ballooning with hyperkinetic base; WMA beyond one coronary territory","Dynamic LVOT obstruction; recovers in weeks"],
+  ["ARVC","Dilated RV, regional RV akinesis/dyskinesis or aneurysm, RVOT dilation","Task Force criteria: RVOT PLAX ≥32 mm or PSAX ≥36 mm (major)"],
+  ["Sarcoid","Basal septal thinning / aneurysm, patchy WMA not following coronaries","Heart block"],
+  ["Fabry","Concentric LVH, binary endocardial sign; basal inferolateral strain reduction",""]]}},
+ {pearl:["SAM = systolic anterior motion of the anterior MV leaflet (or chordae) into the LVOT. It causes LVOT obstruction AND posteriorly directed MR.","SAM：二尖瓣前葉於收縮期前移入 LVOT，導致流出道梗阻及向後的 MR。"]},
+ {pit:["Do not confuse the late-peaking dagger LVOT signal with the MR jet: MR starts at MV closure (includes IVCT), is higher velocity (>5 m/s) and longer.","勿把 LVOT 匕首狀頻譜當成 MR：MR 從二尖瓣關閉開始、速度更高（>5 m/s）、時間更長。"]}
+]},
+{id:"d-peri",t:"Pericardial disease",zh:"心包疾病",blocks:[
+ {b:[["Effusion: echo-free space; pericardial effusion tracks anterior to the descending aorta in PLAX, pleural effusion tracks posterior to it.","心包積液在 PLAX 位於降主動脈前方；胸腔積液位於降主動脈後方。"],
+     ["Size (diastole): small <10 mm, moderate 10–20 mm, large >20 mm.","大小（舒張期）：少量 <10 mm、中量 10–20 mm、大量 >20 mm。"],
+     ["Epicardial fat: anterior, granular, moves with heart; usually not posterior.","心外膜脂肪：通常在前方、顆粒狀，一般不在後方。"]]},
+ {table:{head:["Feature","Tamponade","Constriction","Restriction"],rows:[
+  ["Chamber collapse","RA systolic collapse (>⅓ cycle, sensitive); RV diastolic collapse (specific)","None","None"],
+  ["IVC","Plethoric, <50% collapse","Plethoric","Plethoric"],
+  ["Respiratory variation","Mitral E ↓ >25–30% on inspiration; tricuspid E ↑ >40–60%","Mitral E variation >25%","Minimal (<10%)"],
+  ["Septum","Swings with respiration","Diastolic bounce + respiratory shift","Normal"],
+  ["Tissue Doppler e′","Normal","Preserved/high septal e′ (≥9 cm/s); lateral < septal = annulus reversus","Low e′ (<6 cm/s)"],
+  ["Hepatic veins","Expiratory diastolic flow reversal / loss of D","Expiratory diastolic reversal","Inspiratory diastolic reversal"],
+  ["Pericardium","Effusion","Thickened/bright, may calcify","Normal"]],cite:"Mayo criteria for constriction: respiratory septal shift + medial e′ ≥9 cm/s + hepatic vein expiratory diastolic reversal ratio ≥0.79."}},
+ {pearl:["'Annulus paradoxus': in constriction, E/e′ falls as filling pressure rises because septal e′ stays high.","「瓣環矛盾」：縮窄性心包炎中，雖然充盈壓高，但中隔 e′ 仍高，所以 E/e′ 反而偏低。"]},
+ {pit:["Tamponade is a clinical diagnosis. Report RA/RV collapse and a plethoric IVC immediately as a critical finding.","心包填塞是臨床診斷；發現 RA/RV 塌陷及 IVC 擴張應立即作為危急值通報。"]}
+]},
+{id:"d-ph",t:"Pulmonary hypertension & the right heart",zh:"肺動脈高壓與右心",blocks:[
+ {b:[["RVSP (= PASP without RVOT/PV obstruction) = 4 × TR Vmax² + RAP.","RVSP（無 RVOT/肺動脈瓣阻塞時 = PASP）= 4 × TR Vmax² + RAP。"],
+     ["TR Vmax >2.8 m/s raises the probability of PH; >3.4 m/s = high probability.","TR Vmax >2.8 m/s 提示可能肺動脈高壓；>3.4 m/s 為高可能性。"],
+     ["Mean PAP ≈ 4 × (early-diastolic PR velocity)² + RAP. PA diastolic pressure ≈ 4 × (end-diastolic PR velocity)² + RAP.","平均肺動脈壓 ≈ 4 × 舒張早期 PR 速度² + RAP；肺動脈舒張壓 ≈ 4 × 舒張末期 PR 速度² + RAP。"],
+     ["RVOT acceleration time <105 ms and mid-systolic notching suggest PH (and pulmonary vascular disease).","RVOT 加速時間 <105 ms 及收縮中期切跡提示肺動脈高壓。"],
+     ["D-shaped septum: flattening in systole = RV pressure overload; flattening mainly in diastole = RV volume overload. Eccentricity index >1.1.","D 形中隔：收縮期變平 = 壓力負荷；舒張期變平 = 容量負荷。偏心指數 >1.1。"]]},
+ {pearl:["Acute PE: McConnell's sign = RV free-wall akinesis with apical sparing; '60/60 sign' = RVOT AT <60 ms with TR gradient <60 mmHg.","急性肺栓塞：McConnell 徵象（RV 游離壁無運動但心尖保留）；60/60 徵象。"]}
+]},
+{id:"d-aorta",t:"Great vessels & aortic disease",zh:"大血管與主動脈疾病",blocks:[
+ {b:[["Measure the aortic root at the annulus (inner edge, mid-systole) and at the sinuses, STJ and ascending aorta (leading-edge to leading-edge, end-diastole per ASE).","主動脈根部：瓣環（收縮中期、內緣）；竇部、STJ 及升主動脈（舒張末期、前緣到前緣）。"],
+     ["Dissection: mobile intimal flap; true lumen expands in systole and has forward flow; false lumen is often larger, with slow flow or thrombus.","主動脈夾層：活動的內膜片；真腔收縮期擴張並有前向血流；假腔通常較大、血流慢或有血栓。"],
+     ["Stanford A involves the ascending aorta (surgical emergency); Stanford B is distal to the left subclavian. Look for AR, effusion/tamponade and coronary involvement.","Stanford A 型累及升主動脈（外科急症）；B 型位於左鎖骨下動脈遠端。留意 AR、心包積液及冠脈受累。"],
+     ["Marfan: effacement of the sinotubular junction (pear/flask-shaped root). Bicuspid aortopathy: ascending aorta dilation.","馬凡綜合症：STJ 消失（梨形根部）；二葉主動脈瓣：升主動脈擴張。"],
+     ["Coarctation (suprasternal notch): high velocity in descending aorta with diastolic run-off ('sawtooth'); associated with bicuspid AV.","主動脈縮窄（胸骨上窩切面）：降主動脈高速並有舒張期持續血流；常與二葉瓣合併。"]]},
+ {pit:["A linear reverberation in the ascending aorta can mimic a dissection flap. A real flap moves independently and does not cross anatomic boundaries.","升主動脈的混響偽影可類似夾層內膜片；真正的內膜片有獨立運動，不會越過解剖邊界。"]}
+]},
+{id:"d-mass",t:"Masses, thrombi & normal variants",zh:"腫塊、血栓與正常變異",blocks:[
+ {table:{head:["Mass","Typical site & look"],rows:[
+  ["Myxoma","Most common primary benign tumour; LA, stalk on the fossa ovalis; can prolapse through the MV (pseudo-MS)"],
+  ["Papillary fibroelastoma","Most common valve tumour; small, frond-like, mobile, on the aortic side of AV or atrial side of MV"],
+  ["Lipomatous hypertrophy of IAS","Dumbbell-shaped septum, spares the fossa ovalis"],
+  ["Rhabdomyoma","Most common tumour in children; multiple, in ventricles; tuberous sclerosis"],
+  ["Fibroma","Children; single, large, in the ventricular wall, may calcify"],
+  ["Metastasis","Most common cardiac tumour overall (20–40× primary); often pericardial effusion"],
+  ["LA/LAA thrombus","AF, MS; best seen on TEE; spontaneous echo contrast ('smoke') is a precursor"],
+  ["LV thrombus","Akinetic apex after anterior MI; contrast confirms (no enhancement)"]]}},
+ {table:{head:["Normal variant","Where"],rows:[
+  ["Eustachian valve","IVC–RA junction"],["Chiari network","RA, fenestrated mobile strands"],["Crista terminalis","Posterior RA wall, ridge"],["Moderator band","RV apex (septal to free wall); identifies the RV"],["Coumadin ridge","Between LAA and left upper pulmonary vein"],["Lambl's excrescences","Thin strands on AV coaptation edges"],["False tendon","LV, chord-like band across the cavity"],["Nodules of Arantius","Thickening at the centre of AV cusps"]]}}
+]},
+{id:"d-chd",t:"Congenital heart disease (adult)",zh:"成人先天性心臟病",blocks:[
+ {table:{head:["Lesion","Key points"],rows:[
+  ["Secundum ASD","Most common ASD (~70%); fossa ovalis region; RV volume overload; best seen subcostal"],
+  ["Primum ASD","AV-canal type; associated with cleft anterior MV leaflet; both AV valves at same level"],
+  ["Sinus venosus ASD","Superior type near SVC; associated partial anomalous pulmonary venous return (right upper PV)"],
+  ["Coronary sinus ASD","Unroofed coronary sinus; may coexist with persistent LSVC"],
+  ["Perimembranous VSD","Most common VSD (~70–80%); just below AV in PSAX at ~10–11 o'clock; tricuspid aneurysmal tissue may seal it"],
+  ["Muscular VSD","Trabecular septum; often multiple ('Swiss cheese')"],
+  ["Outlet / supracristal VSD","Below the PV, ~1–2 o'clock in PSAX; AV cusp prolapse causes AR"],
+  ["PDA","Continuous flow into the main PA near the left PA origin (PSAX)"],
+  ["Bicuspid AV","Most common congenital lesion (1–2%); fish-mouth opening; R–L fusion most common; with coarctation and aortopathy"],
+  ["Tetralogy of Fallot","VSD + overriding aorta + RVOT obstruction + RVH; adults after repair: PR, RV dilation"],
+  ["Ebstein anomaly","Apical displacement of septal TV leaflet ≥8 mm/m²; atrialised RV; associated ASD/PFO, WPW"],
+  ["Persistent LSVC","Dilated coronary sinus; agitated saline from LEFT arm fills the CS before the RA"],
+  ["Coarctation","See great vessels: SSN view, diastolic run-off"]]}},
+ {pearl:["Qp:Qs = (RVOT CSA × RVOT VTI) ÷ (LVOT CSA × LVOT VTI). >1.5 indicates a hemodynamically significant left-to-right shunt.","Qp:Qs >1.5 表示具有血流動力學意義的左向右分流。"]},
+ {pit:["Normal TV septal leaflet inserts slightly more apical than the anterior MV leaflet. An absent offset = AV septal defect; an exaggerated one (≥8 mm/m²) = Ebstein.","正常三尖瓣隔葉附著點稍低於二尖瓣前葉；兩者同一水平提示 AVSD；偏移過大（≥8 mm/m²）為 Ebstein。"]}
+]},
+{id:"d-hemo",t:"Hemodynamics & devices",zh:"血流動力學與植入裝置",blocks:[
+ {table:{head:["What you want","Formula"],rows:[
+  ["Pressure gradient","ΔP = 4V² (simplified Bernoulli); use 4(V₂² − V₁²) if proximal V >1.5 m/s"],
+  ["Stroke volume","SV = CSA × VTI; CSA = 0.785 × D²"],
+  ["Cardiac output / index","CO = SV × HR; CI = CO ÷ BSA (normal ≈ 2.5–4.0 L/min/m²)"],
+  ["LA pressure","LAP = SBP − 4(MR Vmax)² (no AS/LVOT obstruction)"],
+  ["LVEDP","LVEDP = DBP − 4(AR end-diastolic V)²"],
+  ["RVSP","4(TR Vmax)² + RAP"],
+  ["PA diastolic","4(PR end-diastolic V)² + RAP"],
+  ["VSD: RVSP","SBP − 4(VSD Vmax)²"],
+  ["PDA: PASP","SBP − 4(PDA Vmax)²"]]}},
+ {b:[["Implanted devices: pacemaker/ICD leads cause reverberation and shadowing in RA/RV; look for lead vegetations and lead-related TR.","起搏器/ICD 導線會造成混響與聲影；留意導線贅生物及導線相關 TR。"],
+     ["LVAD: inflow cannula at the LV apex, outflow graft to ascending aorta. Check AV opening, septal position (midline), LV size, RV function, cannula flow (no aliasing/obstruction).","LVAD：流入管在心尖，流出管接升主動脈；觀察主動脈瓣開啟、中隔位置、LV 大小、RV 功能及管道血流。"],
+     ["Closure devices (ASD/PFO occluder, LAA occluder): check position, residual leak and device-related thrombus.","封堵器：檢查位置、殘餘分流及裝置相關血栓。"]]}
+]}
+];
+NOTES.C=[
+{id:"c-anat",t:"Valve anatomy & the views that show it",zh:"瓣膜解剖與對應切面",blocks:[
+ {b:[["Mitral: anterior (A1–A3) and posterior (P1–P3) leaflets; anterolateral and posteromedial papillary muscles. Annulus is saddle-shaped.","二尖瓣：前葉 A1–A3、後葉 P1–P3；前外側及後內側乳頭肌；瓣環呈馬鞍形。"],
+     ["Aortic: right, left and non-coronary cusps. In PSAX the non-coronary cusp sits next to the interatrial septum.","主動脈瓣：右冠瓣、左冠瓣、無冠瓣；PSAX 中無冠瓣緊貼房間隔。"],
+     ["Tricuspid: anterior, septal and posterior leaflets. Pulmonic: anterior, left and right cusps.","三尖瓣：前葉、隔葉、後葉。肺動脈瓣：前、左、右瓣。"],
+     ["Click a view to see which structures and leaflets it shows.","點擊切面查看所見結構和瓣葉。"]]},
+ {widget:"views"},
+ {pearl:["Diagnose MVP only in PLAX (or long-axis views): >2 mm displacement beyond the annular plane. In A4C the saddle-shaped annulus makes a normal valve look prolapsed.","二尖瓣脫垂只在 PLAX（長軸）診斷：超出瓣環平面 >2 mm。A4C 因馬鞍形瓣環容易誤判。"]}
+]},
+{id:"c-as",t:"Aortic stenosis",zh:"主動脈瓣狹窄",blocks:[
+ {table:{head:["","Sclerosis","Mild","Moderate","Severe"],rows:[
+  ["Peak velocity (m/s)","≤2.5","2.6–2.9","3.0–3.9","≥4.0"],
+  ["Mean gradient (mmHg)","—","<20","20–39","≥40"],
+  ["AVA (cm²)","—",">1.5","1.0–1.5","<1.0"],
+  ["AVA index (cm²/m²)","—",">0.85","0.60–0.85","<0.6"],
+  ["Velocity ratio (DVI)","—",">0.50","0.25–0.50","<0.25"]],sev:[4],cite:"ASE/EACVI AS update 2017; ACC/AHA 2020. Very severe: Vmax ≥5 m/s or MG ≥60 mmHg."}},
+ {b:[["Find the highest velocity: sample from apical 5C/3C, right parasternal, suprasternal and subcostal with the non-imaging (Pedoff) CW probe.","從心尖、右胸骨旁、胸骨上窩、劍突下多窗口用 CW（含 Pedoff 探頭）尋找最高速度。"],
+     ["Continuity: AVA = (0.785 × LVOT D² × LVOT VTI) ÷ AV VTI. LVOT diameter error is squared — the biggest source of error.","連續方程：AVA =（0.785 × LVOT 直徑² × LVOT VTI）÷ AV VTI；LVOT 直徑誤差被平方放大。"],
+     ["Low-flow, low-gradient AS with reduced EF (AVA <1.0, MG <40, EF <50%): low-dose dobutamine. True severe if AVA stays ≤1.0 while MG reaches ≥40 or Vmax ≥4. Contractile reserve = SV rises ≥20%.","低流量低壓差 AS（EF 下降）：低劑量多巴酚丁胺。若 AVA 仍 ≤1.0 而 MG ≥40 或 Vmax ≥4 為真性嚴重；SV 上升 ≥20% 為有收縮儲備。"],
+     ["Paradoxical low-flow AS: preserved EF but SVi <35 mL/m² (small, thick LV).","矛盾性低流量 AS：EF 正常但 SVi <35 mL/m²。"]]},
+ {pit:["AS jet vs MR jet on CW: MR is longer (starts at MV closure, includes IVCT and IVRT) and faster (5–6 m/s). AS starts after a short delay at AV opening.","CW 區分 AS 與 MR：MR 更長（包括等容期）且更快（5–6 m/s）。"]},
+ {pearl:["Subvalvular obstruction (membrane) or supravalvular stenosis: use PW to step through the LVOT to find where velocity jumps.","瓣下（隔膜）或瓣上狹窄：用 PW 逐步沿 LVOT 移動，找出速度驟升的位置。"]}
+]},
+{id:"c-ar",t:"Aortic regurgitation",zh:"主動脈瓣反流",blocks:[
+ {table:{head:["Parameter","Mild","Moderate","Severe"],rows:[
+  ["Vena contracta (cm)","<0.3","0.3–0.6",">0.6"],
+  ["Jet width / LVOT (%)","<25","25–64","≥65"],
+  ["CW pressure half-time (ms)",">500","200–500","<200"],
+  ["Descending aorta flow reversal","Brief, early","Intermediate","Holodiastolic (end-diastolic V >20 cm/s)"],
+  ["Regurgitant volume (mL)","<30","30–59","≥60"],
+  ["Regurgitant fraction (%)","<30","30–49","≥50"],
+  ["EROA (cm²)","<0.10","0.10–0.29","≥0.30"]],sev:[3],cite:"ASE Native Valvular Regurgitation 2017."}},
+ {b:[["Causes: bicuspid AV, root dilation (Marfan, hypertension), endocarditis, rheumatic, dissection, outlet VSD.","病因：二葉瓣、根部擴張、心內膜炎、風濕、夾層、流出道 VSD。"],
+     ["Chronic AR → eccentric LVH and LV dilation. Acute severe AR (dissection, endocarditis) → premature MV closure, short PHT, no LV dilation — an emergency.","慢性 AR 導致離心性肥厚與 LV 擴張；急性嚴重 AR 出現二尖瓣提前關閉，屬緊急情況。"],
+     ["AR jet hitting the anterior MV leaflet causes diastolic fluttering (M-mode) and a functional MS-like murmur (Austin Flint).","AR 射流沖擊二尖瓣前葉，M-mode 可見舒張期顫動（Austin Flint 雜音）。"]]},
+ {pit:["PHT shortens with raised LVEDP or vasodilators even without severe AR. Use it with other parameters.","LVEDP 升高或使用血管擴張劑時 PHT 也會縮短，需配合其他指標判斷。"]}
+]},
+{id:"c-ms",t:"Mitral stenosis",zh:"二尖瓣狹窄",blocks:[
+ {table:{head:["","Mild","Moderate","Severe"],rows:[
+  ["MVA (cm²)",">1.5","1.0–1.5","<1.0  (ACC/AHA 2020: severe ≤1.5)"],
+  ["Mean gradient (mmHg)*","<5","5–10",">10"],
+  ["Pressure half-time (ms)","<150","150–219","≥220"],
+  ["PASP (mmHg)","<30","30–50",">50"]],sev:[3],cite:"ASE/EAE 2009 grading; ACC/AHA 2020 defines severe rheumatic MS as MVA ≤1.5 cm² (PHT ≥150 ms). *Gradient depends on heart rate and flow."}},
+ {b:[["Rheumatic MS: commissural fusion, 'hockey-stick' (doming) anterior leaflet in PLAX, fish-mouth orifice in PSAX, LA enlargement, LA/LAA thrombus.","風濕性 MS：瓣聯合融合、PLAX 前葉呈曲棍球棒狀、PSAX 魚嘴狀開口、左房擴大、可有血栓。"],
+     ["Planimetry is the reference: PSAX, sweep to the leaflet tips (smallest orifice), mid-diastole, low gain.","瓣口面積描記為參考標準：PSAX、掃到瓣尖最小開口、舒張中期、低增益。"],
+     ["MVA = 220 ÷ PHT. Inaccurate right after balloon valvotomy, with significant AR, or abnormal LV compliance.","MVA = 220 ÷ PHT；在球囊擴張術後早期、明顯 AR 或 LV 順應性異常時不準確。"],
+     ["Wilkins score (mobility, thickening, calcification, subvalvular apparatus, 1–4 each). ≤8 favours percutaneous balloon valvotomy.","Wilkins 評分（活動度、增厚、鈣化、瓣下結構，各 1–4 分）；≤8 適合球囊擴張。"],
+     ["Calcific (degenerative) MS from mitral annular calcification starts at the annulus, not the tips; common in elderly/renal failure.","退化性 MS 由瓣環鈣化引起，從瓣環開始而非瓣尖。"]]}
+]},
+{id:"c-mr",t:"Mitral regurgitation",zh:"二尖瓣反流",blocks:[
+ {table:{head:["Parameter","Mild","Moderate","Severe"],rows:[
+  ["Vena contracta (cm)","<0.3","0.3–0.69","≥0.7"],
+  ["Colour jet area","Small central, <20% LA","Variable","Large central >40% LA, or wall-hugging eccentric jet"],
+  ["EROA (PISA) (cm²)","<0.20","0.20–0.39","≥0.40"],
+  ["Regurgitant volume (mL)","<30","30–59","≥60"],
+  ["Regurgitant fraction (%)","<30","30–49","≥50"],
+  ["Pulmonary vein flow","S dominant","Blunted S","Systolic flow reversal"],
+  ["Mitral inflow","A dominant","Variable","E dominant, E >1.2 m/s"],
+  ["CW signal","Faint, parabolic","Dense","Dense, triangular (early peak)"]],sev:[3],cite:"ASE 2017. Secondary MR: EROA ≥0.40 cm² is severe per ACC/AHA 2020; a crescent-shaped orifice may underestimate EROA."}},
+ {b:[["Carpentier: Type I normal leaflet motion (annular dilation, perforation); Type II excessive motion (prolapse, flail); Type IIIa restricted in systole and diastole (rheumatic); Type IIIb restricted in systole (ischemic/functional tethering).","Carpentier 分型：I 型瓣葉活動正常；II 型過度（脫垂、連枷）；IIIa 收縮舒張均受限（風濕）；IIIb 收縮期受限（缺血/功能性）。"],
+     ["Jet direction points AWAY from the prolapsing leaflet and TOWARD the restricted leaflet. Posterior leaflet prolapse → anteriorly directed jet.","射流方向背離脫垂瓣葉、朝向受限瓣葉；後葉脫垂 → 射流指向前方。"],
+     ["PISA: baseline-shift the colour scale toward the jet (aliasing velocity 30–40 cm/s), zoom, measure radius at mid-systole.","PISA：將彩色基線往射流方向移動（混疊速度 30–40 cm/s），放大，於收縮中期量半徑。"]]},
+ {pit:["Colour jet area is gain-, PRF- and pressure-dependent. Eccentric wall-hugging jets look smaller than they are (Coanda effect).","彩色射流面積受增益、PRF 及壓力影響；偏心貼壁射流看起來比實際小（Coanda 效應）。"]}
+]},
+{id:"c-right",t:"Tricuspid & pulmonic valves",zh:"三尖瓣與肺動脈瓣",blocks:[
+ {table:{head:["TR parameter","Mild","Moderate","Severe"],rows:[
+  ["Vena contracta (cm)","<0.3","0.3–0.69","≥0.7"],["EROA (cm²)","<0.20","0.20–0.39","≥0.40"],["Regurgitant volume (mL)","<30","30–44","≥45"],["Jet area (cm²)","<5","5–10",">10"],["Hepatic vein flow","Systolic dominance","Systolic blunting","Systolic flow reversal"],["CW signal","Faint, parabolic","Dense, parabolic","Dense, triangular, early peak"]],sev:[3],cite:"ASE 2017. Newer grading adds 'massive' and 'torrential' beyond severe."}},
+ {table:{head:["Lesion","Severe criteria"],rows:[
+  ["Tricuspid stenosis","Mean gradient ≥5 mmHg, PHT ≥190 ms, TVA ≤1.0 cm², inflow VTI >60 cm"],
+  ["Pulmonic stenosis","Peak V >4 m/s (peak gradient >64 mmHg); moderate 3–4 m/s (36–64); mild <3 m/s"],
+  ["Pulmonic regurgitation","Dense CW with steep deceleration ending before end-diastole, PHT <100 ms, jet width >50% of annulus, PR index <0.77"]],sev:[1]}},
+ {b:[["Carcinoid heart disease: thick, retracted, fixed TV and PV leaflets → TR and PS. Left-sided only with PFO or lung metastases.","類癌心臟病：三尖瓣及肺動脈瓣增厚、回縮、固定；左心受累只見於 PFO 或肺轉移。"],
+     ["Functional TR is the most common TR: annular dilation from RV/RA enlargement or AF. Annulus >40 mm (or >21 mm/m²) supports TV repair at left-sided surgery.","功能性 TR 最常見：右心擴大或房顫導致瓣環擴張；瓣環 >40 mm 支持在左心手術時同時修復。"]]}
+]},
+{id:"c-pros",t:"Prosthetic valves",zh:"人工瓣膜",blocks:[
+ {b:[["Mechanical: bileaflet (most common, three orifices, small closing 'washing' jets are normal), tilting disc, caged ball. Need lifelong anticoagulation.","機械瓣：雙葉瓣（最常見，三個開口，少量閉合「沖洗」射流屬正常）、傾斜碟瓣、籠球瓣；需終身抗凝。"],
+     ["Biological: stented, stentless, homograft, transcatheter (TAVR/TAVI). Degenerate over 10–15 years.","生物瓣：有支架、無支架、同種異體、經導管（TAVR）；約 10–15 年退化。"],
+     ["Paravalvular leak = outside the sewing ring (abnormal). Transvalvular = through the valve. Rocking motion of the ring = dehiscence.","瓣周漏 = 縫合環外（異常）；瓣內反流 = 穿過瓣膜。縫合環搖擺 = 瓣膜撕脫。"],
+     ["Pressure recovery and small bileaflet valves can overestimate gradients.","壓力恢復及小號雙葉瓣可高估壓差。"]]},
+ {table:{head:["Prosthetic aortic","Normal","Possible stenosis","Significant stenosis"],rows:[
+  ["Peak velocity (m/s)","<3","3–4",">4"],["Mean gradient (mmHg)","<20","20–35",">35"],["DVI (LVOT VTI ÷ AV VTI)","≥0.30","0.25–0.29","<0.25"],["EOA (cm²)",">1.1","0.8–1.1","<0.8"],["Jet contour / AT (ms)","Triangular, early peak / <80","Intermediate / 80–100","Rounded, symmetric / >100"]],sev:[3],cite:"ASE Prosthetic Valves 2009 / 2024 update."}},
+ {table:{head:["Prosthetic mitral","Normal","Possible stenosis","Significant stenosis"],rows:[
+  ["Peak E velocity (m/s)","<1.9","1.9–2.5","≥2.5"],["Mean gradient (mmHg)","≤5","6–10",">10"],["VTI ratio (PrMV ÷ LVOT)","<2.2","2.2–2.5",">2.5"],["EOA (cm²)","≥2.0","1–2","<1"],["PHT (ms)","<130","130–200",">200"]],sev:[3]}},
+ {pearl:["Patient–prosthesis mismatch (aortic): indexed EOA ≤0.85 cm²/m² moderate, ≤0.65 severe. The valve works normally but is too small for the patient.","人工瓣-患者不匹配（主動脈）：iEOA ≤0.85 為中度、≤0.65 為重度；瓣膜正常但對病人太小。"]}
+]},
+{id:"c-ie",t:"Infective endocarditis",zh:"感染性心內膜炎",blocks:[
+ {b:[["Vegetation: irregular, mobile mass with independent oscillation on the LOW-pressure side — atrial side of MV/TV, ventricular side of AV/PV.","贅生物：不規則、具獨立擺動，位於低壓側——二/三尖瓣的心房面、主/肺動脈瓣的心室面。"],
+     ["Complications: perivalvular abscess (echolucent or echodense area in the root, often aortic–mitral curtain), pseudoaneurysm, fistula, leaflet perforation, new dehiscence of a prosthesis.","併發症：瓣周膿腫、假性動脈瘤、瘻管、瓣葉穿孔、人工瓣新出現撕脫。"],
+     ["TEE is more sensitive, especially for prosthetic valves, abscess and small vegetations. Echo evidence is a major Duke criterion.","TEE 更敏感，特別是人工瓣、膿腫及小贅生物；超聲證據為 Duke 主要標準。"],
+     ["IV drug use → tricuspid valve. Vegetation >10 mm, very mobile, or with severe regurgitation = higher embolic/surgical risk.","靜脈注射毒品者常見三尖瓣受累；贅生物 >10 mm 或高度活動時栓塞風險高。"]]},
+ {pit:["Non-infective look-alikes: Libman–Sacks (SLE, verrucous on both sides of MV), marantic/NBTE (malignancy), Lambl's excrescences, papillary fibroelastoma.","非感染性類似物：Libman–Sacks（紅斑狼瘡）、消耗性心內膜炎、Lambl 贅生物、乳頭狀纖維彈性瘤。"]}
+]}
+];
+NOTES.B=[
+{id:"b-tte",t:"2D TTE protocol & M-mode",zh:"經胸 2D 檢查流程與 M 型",blocks:[
+ {table:{head:["Window","Views","Key uses"],rows:[
+  ["Parasternal long axis","PLAX, RV inflow, RV outflow","LV dimensions, LVOT diameter, MV/AV morphology, MVP, effusion vs pleural"],
+  ["Parasternal short axis","AV level, MV level, papillary, apex","AV cusps, PV/TV, VSD location, MV planimetry, wall motion"],
+  ["Apical","4C, 5C, 2C, 3C (APLAX)","LVEF (Simpson), diastology, AS/MR Doppler, wall motion, RV focus"],
+  ["Subcostal","4C, SAX, IVC","ASD, effusion, IVC/RAP, RV free wall thickness"],
+  ["Suprasternal notch","Aortic arch long axis","Coarctation, dissection, descending aorta flow reversal, AS Vmax"],
+  ["Right parasternal","Ascending aorta","AS Vmax (often the highest)"]]}},
+ {b:[["Index mark: PLAX ≈ toward right shoulder (10–11 o'clock); PSAX rotate 90° clockwise (toward left shoulder); apical 4C ≈ 3 o'clock; A2C rotate ~60° counter-clockwise; A3C a further ~60°.","探頭標記：PLAX 指向右肩；PSAX 順時針轉 90°；A4C 約 3 點方向；A2C 逆時針轉約 60°；A3C 再轉約 60°。"],
+     ["M-mode: highest temporal resolution (sample rate ~1000–2000/s). Uses: AV/MV motion, SAM, fluttering, TAPSE, LV dimensions, IVC collapse.","M 型：時間分辨率最高；用於瓣膜運動、SAM、顫動、TAPSE、LV 測量、IVC 塌陷。"],
+     ["Classic M-mode signs: B-bump (raised LVEDP), increased E-point septal separation (EPSS >7 mm = low EF), mid-systolic AV notching (HCM/LVOT obstruction), MV diastolic flutter (AR).","經典 M 型徵象：B 峰（LVEDP 升高）、EPSS >7 mm（EF 低）、主動脈瓣收縮中期切跡（HCM）、二尖瓣舒張期顫動（AR）。"]]}
+]},
+{id:"b-doppler",t:"Spectral & colour Doppler technique",zh:"頻譜與彩色多普勒技術",blocks:[
+ {table:{head:["Mode","Strength","Limit","Use"],rows:[
+  ["PW","Range resolution (samples one depth)","Aliases above Nyquist","LVOT VTI, mitral inflow, PV flow"],
+  ["CW","Measures very high velocity, no aliasing","No range resolution (range ambiguity)","AS, MR, TR, AR jets"],
+  ["HPRF","Higher Nyquist than PW","Multiple sample gates → ambiguity","Intermediate velocities, LVOT obstruction"],
+  ["Colour","Spatial map of flow, direction (BART: blue away, red toward)","Low frame rate, aliasing, gain-dependent","Regurgitant jets, shunts, PISA"],
+  ["TDI","Low velocity, high amplitude signal","Angle-dependent","e′, a′, s′, RV S′"]]}},
+ {b:[["Keep the beam parallel to flow. Angle <20° keeps error ≤6% (cos 20° = 0.94). At 60° the velocity is underestimated by 50%.","聲束保持與血流平行：<20° 誤差 ≤6%；60° 時低估 50%。"],
+     ["Lower the wall filter for TDI and low velocities; raise it for high-velocity CW jets.","低速（TDI）時降低壁濾波；高速 CW 時提高。"],
+     ["Optimise colour: narrow, shallow colour box, Nyquist 50–70 cm/s for regurgitant jets, gain just below speckle noise.","彩色優化：縮小並淺置彩色框；評估反流用 Nyquist 50–70 cm/s；增益調至剛好不出現雜訊。"]]}
+]},
+{id:"b-contrast",t:"Contrast (UEA) & agitated saline",zh:"超聲增強劑與生理鹽水發泡試驗",blocks:[
+ {b:[["Ultrasound enhancing agents (Definity/perflutren lipid, Lumason/sulfur hexafluoride, Optison): microbubbles cross the lungs and opacify the LV.","超聲增強劑：微氣泡可通過肺循環並令左心室顯影。"],
+     ["Indication: ≥2 contiguous segments not seen. Also LV thrombus, apical HCM, LVNC, pseudoaneurysm, stress echo.","適應症：≥2 個相鄰節段未能顯示；亦用於血栓、心尖 HCM、心肌緻密化不全、假性動脈瘤、負荷超聲。"],
+     ["Use low MI (≈0.1–0.3) to avoid destroying bubbles. A high-MI 'flash' destroys bubbles for perfusion replenishment imaging. Focus at the mitral level or deeper; reduce gain.","使用低機械指數（約 0.1–0.3）避免破壞微氣泡；高 MI「閃爆」用於灌注再充盈。"],
+     ["Swirling = too little contrast or too high MI; apical attenuation/shadowing = too much contrast.","渦旋 = 造影劑不足或 MI 太高；遠場衰減 = 造影劑過量。"],
+     ["Monitor for reactions (rare anaphylaxis, back pain with Lumason); resuscitation equipment must be available.","監測不良反應（罕見過敏）；必須備有急救設備。"]]},
+ {b:[["Agitated saline does NOT cross the lungs. Bubbles in the LA within 3 cardiac cycles of RA opacification = intracardiac shunt (PFO/ASD).","生理鹽水微泡不能通過肺循環；右房顯影後 3 個心動週期內左房出現微泡 = 心內分流。"],
+     ["Bubbles appearing after 3–5 cycles, from the pulmonary veins = intrapulmonary shunt (AVM, hepatopulmonary syndrome).","3–5 個週期後由肺靜脈出現 = 肺內分流。"],
+     ["Release of Valsalva transiently raises RA pressure above LA pressure and increases PFO detection. A femoral (IVC) injection streams toward the fossa ovalis.","Valsalva 釋放時右房壓短暫高於左房，提高 PFO 檢出率；股靜脈注射血流直指卵圓窩。"]]},
+ {pearl:["Left arm saline filling the coronary sinus before the RA = persistent left SVC.","左臂注射後冠狀竇先於右房顯影 = 永存左上腔靜脈。"]}
+]},
+{id:"b-stress",t:"Stress echocardiography",zh:"負荷超聲心動圖",blocks:[
+ {b:[["Target heart rate = 85% of age-predicted maximum (220 − age).","目標心率 = 年齡預測最大心率（220 − 年齡）的 85%。"],
+     ["Treadmill: post-exercise images within 60–90 s (ideally <60 s). Bicycle: images during exercise (allows Doppler at peak).","跑步機：運動後 60–90 秒內（最好 <60 秒）取像；單車：可於運動中取像。"],
+     ["Dobutamine: start 5–10 µg/kg/min, increase every 3 min to 40 µg/kg/min; add atropine if target HR not reached. Beta-blocker reverses side effects.","多巴酚丁胺：由 5–10 µg/kg/min 開始，每 3 分鐘遞增至 40；未達目標心率可加阿托品；β 阻滯劑可逆轉副作用。"],
+     ["Positive (ischaemia): new or worsening WMA, LV cavity dilation, fall in EF. Normal response: all segments hyperkinetic, cavity smaller.","陽性：新出現或惡化的室壁運動異常、左室擴大、EF 下降；正常反應為全部節段運動增強、心腔縮小。"],
+     ["Viability (DSE): biphasic response — improves at low dose, worsens at high dose = viable and ischaemic.","存活心肌：雙相反應——低劑量改善、高劑量惡化 = 存活且缺血。"],
+     ["Stop for: target HR, significant new WMA, sustained VT/SVT, SBP fall >20 mmHg, severe hypertension (≈>220/120), intolerable symptoms.","終止指徵：達到目標心率、明顯新室壁運動異常、持續心律失常、收縮壓下降 >20 mmHg、嚴重高血壓、無法耐受症狀。"]]},
+ {pearl:["Non-ischaemic stress echo: diastolic stress (E/e′ >14 at exercise), HCM provocation, MS/MR exercise gradients and PASP, low-gradient AS.","非缺血性負荷超聲：舒張負荷、HCM 誘發梗阻、MS/MR 運動壓差、低壓差 AS。"]}
+]},
+{id:"b-tee",t:"Assisting with TEE",zh:"協助經食道超聲",blocks:[
+ {b:[["Before: NPO ≥4–6 h, consent, IV access, allergies, check contraindications (oesophageal stricture, tumour, perforation, recent GI bleed; varices relative). Remove dentures.","檢查前：禁食 ≥4–6 小時、知情同意、靜脈通路、過敏史、禁忌症；取出假牙。"],
+     ["During: monitor SpO₂, BP, ECG; suction ready; bite block. Topical benzocaine can cause methaemoglobinaemia (cyanosis with normal PaO₂).","過程中：監測血氧、血壓、心電圖；備抽吸及咬口器。局部苯佐卡因可致高鐵血紅蛋白症。"],
+     ["After: nothing by mouth until gag reflex returns (~1 h); clean probe with high-level disinfection and inspect for bite marks; log the probe.","檢查後：咽反射恢復前禁食；探頭需高水平消毒並檢查咬痕。"],
+     ["Main indications: endocarditis/abscess, LAA thrombus before cardioversion, prosthetic valve dysfunction, aortic dissection, MV repair planning, source of embolism.","主要適應症：心內膜炎、復律前排除左心耳血栓、人工瓣功能障礙、主動脈夾層、二尖瓣修復評估、栓子來源。"]]},
+ {table:{head:["TEE view","Angle","Shows"],rows:[
+  ["ME four-chamber","0–10°","Chambers, MV, TV"],["ME AV short axis","30–45°","Three AV cusps, IAS"],["ME bicaval","90–110°","SVC, IVC, IAS, PFO"],["ME two-chamber","~90°","LAA, LV anterior/inferior walls"],["ME long axis","120–140°","LVOT, AV, MV A2/P2"],["ME LAA","~45–90°","LAA thrombus"],["Transgastric SAX","0–20°","LV mid-papillary wall motion"],["Descending aorta SAX/LAX","0° / 90°","Atheroma, dissection"]]}}
+]},
+{id:"b-strain3d",t:"Strain & 3D echo",zh:"應變與三維超聲",blocks:[
+ {b:[["Speckle tracking follows acoustic 'speckles' frame by frame; angle-independent. Needs frame rate ~40–80 fps and good endocardial definition.","斑點追蹤逐幀追蹤聲學斑點，與角度無關；需要約 40–80 fps 幀率及清晰心內膜。"],
+     ["GLS is negative (shortening). Normal ≈ −20%. Report the absolute value carefully: 'GLS −12%' is worse than '−20%'.","GLS 為負值（縮短）；正常約 −20%；−12% 比 −20% 更差。"],
+     ["Bull's-eye patterns: apical sparing (amyloid), septal reduction at hypertrophied segments (HCM), basal inferolateral (Fabry), territorial (ischaemia).","牛眼圖：心尖保留（澱粉樣變）、肥厚節段下降（HCM）、基底下側壁（Fabry）、冠脈分佈（缺血）。"],
+     ["3D: full-volume multi-beat acquisitions are prone to stitching artefacts (arrhythmia, breathing) — use breath hold. 3D LV volumes avoid foreshortening and geometric assumptions.","3D：多心動週期全容積易有拼接偽影，需屏氣；3D LV 容積無需幾何假設。"]]}
+]}
+];
+NOTES.E=[
+{id:"e-wave",t:"Sound waves & propagation",zh:"聲波與傳播",blocks:[
+ {b:[["Propagation speed in soft tissue = 1540 m/s (1.54 mm/µs). It depends on the medium only (stiffness ↑ speed, density ↓ speed).","軟組織聲速 1540 m/s，只由介質決定（硬度↑速度↑、密度↑速度↓）。"],
+     ["Wavelength λ (mm) = 1.54 ÷ f (MHz). Higher frequency → shorter λ → better axial resolution but less penetration.","波長 λ（mm）= 1.54 ÷ 頻率（MHz）；頻率越高，軸向分辨率越好但穿透越差。"],
+     ["Attenuation ≈ 0.5 dB/cm/MHz in soft tissue. Total = 0.5 × f × path length. Lung and bone attenuate far more; water/blood far less.","軟組織衰減約 0.5 dB/cm/MHz；肺和骨骼衰減大得多，水和血液很少。"],
+     ["Decibels: +3 dB = intensity ×2, +10 dB = ×10; −3 dB = half; −10 dB = one-tenth.","分貝：+3 dB = 強度 ×2；+10 dB = ×10；−3 dB = 一半。"],
+     ["Reflection at a boundary needs an impedance mismatch (Z = density × speed). %reflected = ((Z₂ − Z₁)/(Z₂ + Z₁))². Refraction needs oblique incidence AND different speeds (Snell's law).","反射需聲阻抗差（Z = 密度 × 聲速）；折射需斜入射且兩介質聲速不同。"]]},
+ {widget:"physics"},
+ {pearl:["The range equation: depth = (c × time)/2; every 13 µs of round-trip time = 1 cm of depth in soft tissue.","距離方程：深度 =（聲速 × 時間）/ 2；往返 13 µs = 1 cm 深度。"]}
+]},
+{id:"e-res",t:"Resolution, pulses & frame rate",zh:"分辨率、脈衝與幀率",blocks:[
+ {table:{head:["Resolution","Determined by","Improve by"],rows:[
+  ["Axial (longitudinal)","SPL ÷ 2 = (cycles × λ)/2","Higher frequency, fewer cycles per pulse (damping/backing)"],
+  ["Lateral","Beam width","Focusing; is best at the focus (narrowest point); higher frequency"],
+  ["Elevational (slice thickness)","Beam thickness","Matrix/2D-array probes"],
+  ["Temporal","Frame rate","Shallower depth, narrower sector, fewer focal zones, lower line density"],
+  ["Contrast","Grey-scale levels, dynamic range","Compression/post-processing"]]}},
+ {b:[["Max PRF ≈ 77,000 ÷ depth (cm). Frame rate ≈ 77,000 ÷ (depth × lines per frame × focal zones).","最大 PRF ≈ 77,000 ÷ 深度（cm）；幀率 ≈ 77,000 ÷（深度 × 線數 × 焦點數）。"],
+     ["Pulse duration and SPL are set by the transducer (not adjustable by sonographer). PRP and PRF change with depth.","脈衝持續時間及空間脈衝長度由探頭決定；PRP 和 PRF 隨深度改變。"],
+     ["Near zone length (unfocused) = D²/(4λ). Larger crystal or higher frequency → longer near zone, less divergence in far field.","近場長度 = D²/(4λ)；晶片越大或頻率越高，近場越長、遠場發散越少。"],
+     ["Transducer: PZT crystal thickness = λ/2; matching layer thickness = λ/4; backing layer shortens the pulse (improves axial resolution, reduces sensitivity).","晶片厚度 = λ/2；匹配層 = λ/4；背襯層縮短脈衝（改善軸向分辨率，降低靈敏度）。"],
+     ["Harmonic imaging: receives 2f₀; reduces near-field and side-lobe artefacts and improves endocardial definition; valves can look thicker.","諧波成像：接收 2 倍頻率；減少近場及旁瓣偽影，但瓣膜看起來較厚。"]]}
+]},
+{id:"e-doppler",t:"Doppler physics & aliasing",zh:"多普勒物理與混疊",blocks:[
+ {b:[["Doppler shift Δf = (2 × f₀ × V × cosθ) ÷ c. The shift is proportional to velocity and transmitted frequency.","多普勒頻移 Δf = 2 f₀ V cosθ / c，與速度及發射頻率成正比。"],
+     ["Nyquist limit = PRF ÷ 2. If Δf exceeds it, PW aliases (wrap-around).","Nyquist 極限 = PRF ÷ 2；超出即混疊。"],
+     ["Fix aliasing: switch to CW, shift the baseline, increase the scale (PRF), use a shallower sample volume, a lower-frequency transducer, or HPRF.","消除混疊：改用 CW、移動基線、提高 scale（PRF）、減淺取樣深度、用低頻探頭或 HPRF。"]]},
+ {widget:"nyquist"},
+ {pearl:["Lower transducer frequency reduces aliasing: for the same velocity it produces a smaller Doppler shift.","低頻探頭產生較小的多普勒頻移，所以較不易混疊。"]}
+]},
+{id:"e-art",t:"Artefacts",zh:"偽影",blocks:[{widget:"artifacts"},
+ {pit:["Range ambiguity: with high PRF (or HPRF), echoes from a previous pulse arrive late and are placed too shallow.","距離模糊：PRF 高時，前一脈衝的回波晚到，被放在較淺的位置。"]}]},
+{id:"e-bio",t:"Bioeffects, safety & instrumentation",zh:"生物效應、安全與儀器",blocks:[
+ {b:[["ALARA: As Low As Reasonably Achievable. Lower output power first, then raise receiver gain. Minimise scan time.","ALARA 原則：先降低輸出功率，再提高接收增益；縮短掃描時間。"],
+     ["Mechanical index MI = peak rarefactional pressure ÷ √f — relates to cavitation. Thermal index TI — relates to heating (TIS soft tissue, TIB bone, TIC cranial).","機械指數 MI 與空化相關；熱指數 TI 與升溫相關。"],
+     ["Output power (transmit) affects patient exposure and the whole image. Receiver gain (overall/TGC) only amplifies returning echoes — no change in exposure.","發射功率影響病人暴露及整體圖像；接收增益只放大回波，不影響暴露量。"],
+     ["Receiver order: amplification → compensation (TGC) → compression (dynamic range) → demodulation → rejection.","接收器順序：放大 → 補償（TGC）→ 壓縮 → 解調 → 抑制。"],
+     ["Pre-processing (cannot be undone on a frozen image): TGC, write zoom, persistence, edge enhancement. Post-processing: read zoom, contrast variation, B-colour.","前處理（凍結後不可改）：TGC、寫放大、余輝；後處理：讀放大、對比調整、偽彩。"]]}
+]}
+];
+NOTES.A=[
+{id:"a-prep",t:"Before the study",zh:"檢查前準備",blocks:[
+ {b:[["Verify the order and indication; confirm patient identity with two identifiers (name + DOB or MRN).","核對醫囑與適應症；用兩個識別資料確認病人身份。"],
+     ["Review history, medications, prior echo/reports, ECG rhythm, BP, height/weight (for BSA and indexing).","查閱病史、藥物、既往報告、心律、血壓、身高體重（計算 BSA）。"],
+     ["Explain the procedure, obtain consent where needed (TEE, contrast, stress), and check allergies.","解釋流程，按需要取得同意（TEE、造影、負荷），核對過敏史。"],
+     ["Hand hygiene and standard precautions; transmission-based precautions for isolation patients; clean the probe and cable between patients.","手衛生及標準預防；隔離病人按傳播途徑防護；每位病人之間清潔探頭與導線。"],
+     ["Record BP at the time of the study — needed for LAP, LVEDP, VSD and MR calculations.","檢查時記錄血壓，用於計算 LAP、LVEDP、VSD 等。"]]}
+]},
+{id:"a-ergo",t:"Ergonomics & safety",zh:"人體工學與安全",blocks:[
+ {b:[["Keep shoulder abduction <30°, wrist neutral, elbow close to the body. Adjust bed and chair height; support the arm and the cable.","肩外展 <30°、手腕中立、肘貼近身體；調整床椅高度並支撐手臂及導線。"],
+     ["Vary scanning hand/position and take micro-breaks to reduce musculoskeletal injury.","交替姿勢並短暫休息，減少肌肉骨骼損傷。"],
+     ["Electrical safety: inspect cables and probes for cracks; report and remove damaged equipment.","電氣安全：檢查導線和探頭有無破損，損壞須通報並停用。"]]}
+]},
+{id:"a-comm",t:"Communication & reporting",zh:"溝通與報告",blocks:[
+ {b:[["Prepare a preliminary worksheet with measurements, calculations and images for the reading physician.","為判讀醫生準備初步記錄，包括測量、計算和影像。"],
+     ["Critical findings must be reported to the physician immediately: tamponade, aortic dissection, mobile LV/LA thrombus, large mobile vegetation, free-wall rupture/pseudoaneurysm, new severe valve dysfunction, prosthetic valve thrombosis, massive PE signs.","危急值須立即通報：心包填塞、主動脈夾層、活動性血栓、大型活動贅生物、游離壁破裂、新出現嚴重瓣膜功能障礙、人工瓣血栓、大面積肺栓塞徵象。"],
+     ["Sonographers describe findings; physicians interpret and diagnose to the patient. Protect privacy (HIPAA/PDPO).","超聲技術員描述所見；診斷由醫生作出並告知病人。保護私隱。"],
+     ["Document the time, the person notified and the read-back of critical results.","記錄通報時間、接收人及回讀確認。"]]}
+]}
+];
+const CARDS_RAW=[
+["D","Normal LVEF (biplane), men vs women","≥52% men · ≥54% women","男 ≥52%、女 ≥54%"],
+["D","Severe LV systolic dysfunction EF","<30%","EF <30%"],
+["D","Normal LAVI upper limit","34 mL/m²","≤34 mL/m²"],
+["D","Severe LA enlargement (LAVI)",">48 mL/m²",">48 mL/m²"],
+["D","RWT formula and cut-off","2 × PWd ÷ LVIDd; >0.42 = concentric","RWT >0.42 為向心性"],
+["D","LV mass index upper normal","≤115 g/m² men · ≤95 g/m² women","男 ≤115、女 ≤95 g/m²"],
+["D","Abnormal TAPSE","<17 mm","<17 mm"],
+["D","Abnormal RV S′","<9.5 cm/s","<9.5 cm/s"],
+["D","Abnormal RV FAC","<35%","<35%"],
+["D","Dilated RV basal diameter",">41 mm",">41 mm"],
+["D","RV hypertrophy free-wall thickness",">5 mm (subcostal)",">5 mm"],
+["D","IVC ≤2.1 cm, >50% collapse → RAP","3 mmHg (0–5)","3 mmHg"],
+["D","IVC >2.1 cm, <50% collapse → RAP","15 mmHg (10–20)","15 mmHg"],
+["D","Normal GLS","≈ −20% (more negative than −18%)","約 −20%"],
+["D","Wall-motion score: akinesis","3","無運動 = 3 分"],
+["D","WMSI formula","Sum of segment scores ÷ number of segments scored","總分 ÷ 節段數"],
+["D","LAD territory (segments)","Anterior, anteroseptal, apical segments & apex (1,2,7,8,13,14,17)","前壁、前間隔、心尖"],
+["D","RCA territory (segments)","Basal/mid inferoseptal & inferior (3,4,9,10,15)","下壁及下間隔"],
+["D","LCx territory (segments)","Anterolateral & inferolateral (5,6,11,12,16)","前側壁及下側壁"],
+["D","Which papillary muscle ruptures more often? Why?","Posteromedial — single blood supply (PDA)","後內側，單一血供"],
+["D","Pseudoaneurysm vs true aneurysm neck","Pseudo: narrow neck (ratio <0.5). True: wide neck","假性：窄頸；真性：寬頸"],
+["D","dP/dt calculation","32 mmHg ÷ time for MR velocity to go 1→3 m/s","32 ÷ 1→3 m/s 時間"],
+["D","Normal dP/dt",">1200 mmHg/s",">1200 mmHg/s"],
+["D","Tei index formula","(IVCT + IVRT) ÷ ET","(IVCT+IVRT)/ET"],
+["D","Abnormal septal & lateral e′","Septal <7 cm/s · lateral <10 cm/s","中隔 <7、側壁 <10 cm/s"],
+["D","Average E/e′ suggesting raised LAP",">14",">14"],
+["D","TR velocity criterion in diastolic algorithm",">2.8 m/s",">2.8 m/s"],
+["D","Grade I diastolic dysfunction inflow","E/A ≤0.8, E ≤50 cm/s, long DT","E/A ≤0.8、DT 長"],
+["D","Grade III (restrictive) inflow","E/A ≥2, DT <160 ms","E/A ≥2、DT <160 ms"],
+["D","Valsalva in pseudonormal filling","E/A falls ≥50% (unmasks impaired relaxation)","E/A 下降 ≥50%"],
+["D","HCM wall thickness criterion","≥15 mm (≥13 mm with family history)","≥15 mm"],
+["D","LVOT obstruction threshold in HCM","Peak gradient ≥30 mmHg (≥50 = significant)","≥30 mmHg"],
+["D","LVOT obstruction CW shape","Late-peaking 'dagger'","匕首狀、晚峰"],
+["D","Apical-sparing strain pattern","Cardiac amyloidosis","心肌澱粉樣變"],
+["D","LVNC ratio (Jenni)","Non-compacted : compacted >2 in systole",">2（收縮期）"],
+["D","Takotsubo pattern","Apical ballooning, hyperkinetic base","心尖氣球樣變"],
+["D","Most sensitive tamponade sign","RA systolic collapse (>⅓ of cycle)","右房收縮期塌陷"],
+["D","Most specific tamponade sign","RV diastolic collapse","右室舒張期塌陷"],
+["D","Mitral inflow respiratory variation in tamponade",">25–30% fall with inspiration","吸氣時下降 >25%"],
+["D","Annulus reversus","Lateral e′ < septal e′ — constrictive pericarditis","縮窄性心包炎"],
+["D","Constriction vs restriction: septal e′","Constriction preserved (≥9 cm/s); restriction low","縮窄正常、限制性下降"],
+["D","Pericardial vs pleural effusion in PLAX","Pericardial anterior to descending aorta; pleural posterior","心包積液在降主動脈前方"],
+["D","Large pericardial effusion size",">20 mm in diastole",">20 mm"],
+["D","RVSP formula","4 × TR Vmax² + RAP","4V² + RAP"],
+["D","RVOT acceleration time suggesting PH","<105 ms","<105 ms"],
+["D","Systolic vs diastolic septal flattening","Systolic = pressure overload; diastolic = volume overload","收縮期=壓力；舒張期=容量"],
+["D","McConnell's sign","RV free-wall akinesis with apical sparing — acute PE","急性肺栓塞"],
+["D","Mean PAP from PR","4 × (early diastolic PR V)² + RAP","4×PR早期V² + RAP"],
+["D","LAP from MR","SBP − 4(MR Vmax)²","SBP − 4V²"],
+["D","LVEDP from AR","DBP − 4(AR end-diastolic V)²","DBP − 4V²"],
+["D","Stanford A vs B","A involves ascending aorta; B distal to L subclavian","A 累及升主動脈"],
+["D","True lumen in dissection","Expands in systole, forward systolic flow","收縮期擴張"],
+["D","Marfan root shape","Effaced STJ — pear/flask shape","STJ 消失"],
+["D","Most common primary cardiac tumour","Myxoma (LA, stalk on fossa ovalis)","黏液瘤"],
+["D","Most common valve tumour","Papillary fibroelastoma","乳頭狀纖維彈性瘤"],
+["D","Most common cardiac tumour overall","Metastasis","轉移瘤"],
+["D","Lipomatous hypertrophy of IAS","Dumbbell shape, spares fossa ovalis","啞鈴狀，不累及卵圓窩"],
+["D","Most common ASD","Secundum (~70%)","繼發孔型"],
+["D","ASD with cleft MV","Primum ASD","原發孔型"],
+["D","ASD with anomalous right upper PV","Superior sinus venosus","上腔靜脈竇型"],
+["D","Most common VSD","Perimembranous","膜周部"],
+["D","Outlet VSD complication","AV cusp prolapse → AR","主動脈瓣脫垂致 AR"],
+["D","Significant Qp:Qs",">1.5",">1.5"],
+["D","Ebstein displacement criterion","Septal TV leaflet ≥8 mm/m² apical to MV","≥8 mm/m²"],
+["D","Dilated coronary sinus + left arm bubbles fill CS first","Persistent left SVC","永存左上腔靜脈"],
+["D","Tetralogy of Fallot components","VSD, overriding aorta, RVOT obstruction, RVH","四聯症四要素"],
+["C","Severe AS: Vmax / MG / AVA","≥4 m/s · ≥40 mmHg · <1.0 cm²","≥4、≥40、<1.0"],
+["C","Severe AS DVI","<0.25","<0.25"],
+["C","Severe AS AVA index","<0.6 cm²/m²","<0.6"],
+["C","Very severe AS","Vmax ≥5 m/s or MG ≥60 mmHg","Vmax ≥5"],
+["C","Continuity equation","AVA = CSA_LVOT × VTI_LVOT ÷ VTI_AV","連續方程"],
+["C","Biggest error in continuity AVA","LVOT diameter (squared)","LVOT 直徑"],
+["C","Contractile reserve on low-dose DSE","SV increase ≥20%","SV ↑ ≥20%"],
+["C","Paradoxical low-flow AS SVi","<35 mL/m² with preserved EF","<35 mL/m²"],
+["C","Severe AR vena contracta",">0.6 cm",">0.6 cm"],
+["C","Severe AR PHT","<200 ms","<200 ms"],
+["C","Severe AR jet width/LVOT","≥65%","≥65%"],
+["C","Severe AR descending aorta finding","Holodiastolic reversal, end-diastolic V >20 cm/s","全舒張期反流"],
+["C","Severe AR EROA","≥0.30 cm²","≥0.30"],
+["C","Acute severe AR M-mode sign","Premature MV closure","二尖瓣提前關閉"],
+["C","Austin Flint","AR jet causes diastolic flutter of anterior MV leaflet","AR 致前葉顫動"],
+["C","MVA from PHT","220 ÷ PHT","220/PHT"],
+["C","Severe MS (classic) MVA & MG","<1.0 cm² · >10 mmHg","<1.0、>10"],
+["C","Rheumatic MS leaflet shape (PLAX)","Hockey-stick / diastolic doming","曲棍球棒狀"],
+["C","MV planimetry: where & when","PSAX at leaflet tips, mid-diastole","瓣尖、舒張中期"],
+["C","Wilkins score favourable for valvotomy","≤8","≤8"],
+["C","Severe MR VC / EROA / RVol / RF","≥0.7 cm · ≥0.40 cm² · ≥60 mL · ≥50%","≥0.7、≥0.40、≥60、≥50%"],
+["C","Severe MR pulmonary vein flow","Systolic flow reversal","收縮期反流"],
+["C","Severe MR mitral inflow","E dominant, E >1.2 m/s","E >1.2 m/s"],
+["C","Carpentier IIIb","Restricted systolic leaflet motion (ischaemic tethering)","收縮期受限"],
+["C","Posterior leaflet prolapse → jet direction","Anterior (away from prolapsing leaflet)","向前"],
+["C","PISA EROA formula","EROA = 2πr² × Va ÷ Vmax(MR)","2πr²×Va/Vmax"],
+["C","MVP definition","Leaflet >2 mm beyond annular plane in PLAX","PLAX 超出 >2 mm"],
+["C","Severe TR VC / EROA / RVol","≥0.7 cm · ≥0.40 cm² · ≥45 mL","≥0.7、≥0.40、≥45"],
+["C","Severe TR hepatic vein","Systolic flow reversal","收縮期反流"],
+["C","Severe TS mean gradient","≥5 mmHg","≥5 mmHg"],
+["C","Severe PS peak velocity",">4 m/s (>64 mmHg)",">4 m/s"],
+["C","Severe PR PHT","<100 ms","<100 ms"],
+["C","Carcinoid heart disease valves","Tricuspid and pulmonic — thick, retracted, fixed","三尖瓣及肺動脈瓣"],
+["C","Normal prosthetic AV DVI","≥0.30","≥0.30"],
+["C","Prosthetic AV AT suggesting stenosis",">100 ms",">100 ms"],
+["C","Prosthetic MV VTI ratio significant stenosis",">2.5",">2.5"],
+["C","Prosthetic MV normal PHT","<130 ms","<130 ms"],
+["C","Severe aortic PPM (iEOA)","≤0.65 cm²/m²","≤0.65"],
+["C","Paravalvular leak definition","Regurgitation outside the sewing ring","縫合環外反流"],
+["C","Vegetation location","Low-pressure side: atrial side of AV valves, ventricular side of semilunar","低壓側"],
+["C","IV drug use endocarditis valve","Tricuspid","三尖瓣"],
+["C","Most common bicuspid fusion","Right–left coronary cusp fusion","右-左冠瓣融合"],
+["B","PW vs CW key difference","PW has range resolution but aliases; CW no aliasing but range ambiguity","PW 定位但混疊；CW 不混疊但無定位"],
+["B","Angle <20° error","≤6% (cos 20° = 0.94)","≤6%"],
+["B","Colour Doppler convention","BART: Blue Away, Red Toward","藍離紅向"],
+["B","UEA indication","≥2 contiguous segments not visualised","≥2 相鄰節段不可見"],
+["B","MI for contrast LV opacification","Low, ≈0.1–0.3","低 MI"],
+["B","Swirling of contrast in LV apex","Too little contrast or MI too high","造影劑不足或 MI 過高"],
+["B","Positive bubble study for PFO","LA bubbles within 3 cycles of RA opacification","3 個心動週期內"],
+["B","Intrapulmonary shunt bubble timing","After 3–5 cycles, via pulmonary veins","3–5 週期後"],
+["B","Target HR in stress echo","85% × (220 − age)","85% 最大心率"],
+["B","Treadmill imaging window","Within 60–90 s post-exercise","60–90 秒內"],
+["B","Dobutamine protocol","5/10 → 20 → 30 → 40 µg/kg/min every 3 min ± atropine","每 3 分鐘遞增"],
+["B","Biphasic DSE response","Viable myocardium with ischaemia","存活但缺血"],
+["B","TEE: methaemoglobinaemia cause","Topical benzocaine","苯佐卡因"],
+["B","TEE view for PFO / IAS","ME bicaval (90–110°)","雙腔切面"],
+["B","TEE view for 3 AV cusps","ME AV short axis (30–45°)","主動脈瓣短軸"],
+["B","EPSS indicating low EF",">7 mm",">7 mm"],
+["B","M-mode B-bump","Raised LVEDP","LVEDP 升高"],
+["B","Best window for coarctation","Suprasternal notch","胸骨上窩"],
+["B","3D stitching artefact cause","Multi-beat acquisition with arrhythmia or breathing","心律不齊或呼吸"],
+["E","Speed of sound in soft tissue","1540 m/s (1.54 mm/µs)","1540 m/s"],
+["E","Wavelength at 2.5 MHz","1.54 ÷ 2.5 = 0.62 mm","0.62 mm"],
+["E","Soft-tissue attenuation coefficient","0.5 dB/cm/MHz","0.5 dB/cm/MHz"],
+["E","+3 dB means","Intensity doubles","強度加倍"],
+["E","13 µs rule","13 µs round trip = 1 cm depth","13 µs = 1 cm"],
+["E","Axial resolution formula","SPL ÷ 2","SPL/2"],
+["E","Lateral resolution depends on","Beam width (best at focus)","聲束寬度"],
+["E","Nyquist limit","PRF ÷ 2","PRF/2"],
+["E","Doppler equation","Δf = 2 f₀ V cosθ ÷ c","多普勒方程"],
+["E","Maximum PRF vs depth","≈77,000 ÷ depth (cm)","77000/深度"],
+["E","Ways to raise frame rate","Shallower depth, narrower sector, fewer focal zones, lower line density","減深度、窄扇區、少焦點"],
+["E","Matching layer thickness","λ/4","λ/4"],
+["E","Crystal thickness","λ/2","λ/2"],
+["E","Near zone length","D² ÷ 4λ","D²/4λ"],
+["E","Impedance","Z = density × propagation speed","Z = ρc"],
+["E","Refraction requires","Oblique incidence + different propagation speeds","斜入射 + 聲速不同"],
+["E","Reverberation appearance","Equally spaced parallel lines deeper than the reflector","等距平行線"],
+["E","Mirror image artefact","Duplicate placed deeper, behind a strong reflector","鏡像在更深處"],
+["E","Refraction artefact","Side-by-side duplicate (lateral displacement)","並排重複"],
+["E","Side lobe vs grating lobe","Side lobes: single-element; grating lobes: arrays","旁瓣 vs 柵瓣"],
+["E","Range ambiguity places echoes","Too shallow","太淺"],
+["E","Mechanical index","Peak rarefactional pressure ÷ √f — cavitation","MI 與空化"],
+["E","ALARA order of adjustments","Lower output power first, then raise receiver gain","先降功率再加增益"],
+["E","Harmonic imaging benefit","Fewer near-field & side-lobe artefacts; better endocardium","減少偽影"],
+["A","Patient identification","Two identifiers (name + DOB/MRN)","兩個識別資料"],
+["A","Shoulder abduction limit","<30°","<30°"],
+["A","Who tells the patient the diagnosis?","The interpreting physician","判讀醫生"],
+["A","Examples of critical findings","Tamponade, dissection, mobile thrombus, large vegetation, rupture","危急值例子"],
+["A","Why record BP during the study","Needed for LAP, LVEDP, VSD/PDA pressure calculations","計算壓力"]
+];
+const CARDS=CARDS_RAW.map((c,i)=>({id:"k"+i,d:c[0],f:c[1],b:c[2],zh:c[3]}));
+const QUIZ_RAW=[
+// ---------- D: anatomy, physiology, hemodynamics ----------
+{d:"D",q:"TR peak velocity is 3.5 m/s. The IVC is 2.4 cm with <50% collapse on sniff. What is the estimated RVSP?",o:["49 mmHg","52 mmHg","57 mmHg","64 mmHg"],a:3,e:"4 × 3.5² = 49 mmHg. A dilated IVC with <50% collapse gives RAP ≈15 mmHg. 49 + 15 = 64 mmHg.",z:"4×3.5²=49，RAP 15，RVSP = 64 mmHg。"},
+{d:"D",q:"Which echo sign is the MOST specific for cardiac tamponade?",o:["RA systolic collapse","RV diastolic collapse","Plethoric IVC","Swinging heart"],a:1,e:"RA systolic collapse is sensitive (especially >⅓ of the cycle); RV diastolic collapse is more specific.",z:"右室舒張期塌陷最特異；右房收縮期塌陷最敏感。"},
+{d:"D",q:"In the PLAX view an echo-free space lies posterior to the LV and POSTERIOR to the descending aorta. This is most likely:",o:["Pericardial effusion","Pleural effusion","Epicardial fat","Ascites"],a:1,e:"Pericardial fluid tracks anterior to the descending aorta (between the aorta and the LA). Fluid posterior to the aorta is pleural.",z:"降主動脈後方的液體為胸腔積液。"},
+{d:"D",q:"A patient has septal e′ 5 cm/s, lateral e′ 7 cm/s, E 100 cm/s, LAVI 40 mL/m², TR 3.0 m/s, EF 60%. Diastolic function is:",o:["Normal","Indeterminate","Dysfunction with raised LAP","Constrictive physiology"],a:2,e:"Average e′ = 6 → E/e′ ≈ 16.7 (>14). Septal e′ <7 and lateral <10 are abnormal. LAVI >34, TR >2.8. All four criteria positive → diastolic dysfunction; E/A and these findings indicate raised LAP.",z:"四項指標全陽性 → 舒張功能障礙並充盈壓升高。"},
+{d:"D",t:"multi",q:"Select ALL findings that favour constrictive pericarditis over restrictive cardiomyopathy.",o:["Septal e′ 11 cm/s","Respiratory septal shift","Lateral e′ lower than septal e′","Marked biatrial enlargement with sparkling myocardium","Hepatic vein expiratory diastolic flow reversal"],a:[0,1,2,4],e:"Constriction: preserved/high septal e′, annulus reversus, respiratory ventricular interdependence and expiratory HV diastolic reversal. Sparkling thick myocardium with biatrial enlargement suggests amyloid (restriction).",z:"縮窄：e′ 正常、瓣環逆轉、呼吸性中隔移位、肝靜脈呼氣相反流。"},
+{d:"D",t:"hot",q:"Click the segment most typically supplied by the RCA: basal inferior wall.",a:[4],e:"Basal inferior = segment 4, RCA territory (in right-dominant circulation).",z:"基底下壁 = 第 4 段，右冠狀動脈。"},
+{d:"D",t:"hot",q:"Click the apical cap (the segment always assigned to the LAD in the 17-segment model).",a:[17],e:"Segment 17 (apex) is assigned to the LAD.",z:"第 17 段心尖帽屬 LAD。"},
+{d:"D",t:"hot",q:"Click the basal anterolateral segment (LCx territory).",a:[6],e:"Basal anterolateral = segment 6; LCx (sometimes LAD diagonal).",z:"基底前側壁 = 第 6 段。"},
+{d:"D",t:"hot",q:"Click the mid anteroseptal segment.",a:[8],e:"Mid anteroseptal = segment 8, LAD territory.",z:"中段前間隔 = 第 8 段，LAD。"},
+{d:"D",q:"A patient with HCM has a late-peaking, dagger-shaped LVOT signal of 4 m/s at rest. The peak gradient is:",o:["16 mmHg","32 mmHg","64 mmHg","80 mmHg"],a:2,e:"4 × 4² = 64 mmHg. ≥50 mmHg is a hemodynamically significant obstruction.",z:"4×4² = 64 mmHg，≥50 mmHg 為明顯梗阻。"},
+{d:"D",q:"Which finding best suggests cardiac amyloidosis?",o:["Thin walls with high ECG voltage","Apical-sparing longitudinal strain","Apical ballooning","Septal bounce"],a:1,e:"Amyloid: thick walls with low voltage, sparkling myocardium, biatrial enlargement and relative apical sparing of GLS.",z:"心尖保留應變為澱粉樣變特徵。"},
+{d:"D",q:"After an inferior MI, a patient has acute pulmonary oedema and a flail MV leaflet with a mobile mass attached. The most likely cause is rupture of the:",o:["Anterolateral papillary muscle","Posteromedial papillary muscle","Interventricular septum","LV free wall"],a:1,e:"The posteromedial papillary muscle has a single supply (PDA, usually from the RCA), so it ruptures more often, typically after inferior MI.",z:"後內側乳頭肌單一血供，下壁心梗後易斷裂。"},
+{d:"D",q:"An LV outpouching has a narrow neck (neck/max diameter 0.3) and to-and-fro flow. This is most likely a:",o:["True aneurysm","Pseudoaneurysm","Diverticulum","LV thrombus"],a:1,e:"Pseudoaneurysm = contained rupture with a narrow neck (<0.5 ratio). True aneurysms have a wide neck.",z:"窄頸 + 往返血流 = 假性動脈瘤。"},
+{d:"D",q:"Systolic BP is 120 mmHg and the MR peak velocity is 5 m/s. Estimated LA pressure is:",o:["10 mmHg","20 mmHg","25 mmHg","100 mmHg"],a:1,e:"LAP = SBP − 4V² = 120 − 100 = 20 mmHg.",z:"LAP = 120 − 4×25 = 20 mmHg。"},
+{d:"D",q:"Diastolic BP is 60 mmHg and the AR end-diastolic velocity is 3 m/s. LVEDP is about:",o:["12 mmHg","24 mmHg","36 mmHg","48 mmHg"],a:1,e:"LVEDP = DBP − 4V² = 60 − 36 = 24 mmHg.",z:"60 − 4×9 = 24 mmHg。"},
+{d:"D",q:"A VSD jet peaks at 4.5 m/s and SBP is 130 mmHg. RVSP is about:",o:["49 mmHg","81 mmHg","130 mmHg","211 mmHg"],a:0,e:"RVSP = SBP − 4V² = 130 − 81 = 49 mmHg (no LVOT obstruction).",z:"130 − 81 = 49 mmHg。"},
+{d:"D",q:"The MR CW jet takes 40 ms to rise from 1 to 3 m/s. LV dP/dt is:",o:["400 mmHg/s","800 mmHg/s","1250 mmHg/s","1600 mmHg/s"],a:1,e:"dP/dt = 32 mmHg ÷ 0.04 s = 800 mmHg/s → severely reduced.",z:"32 ÷ 0.04 = 800 mmHg/s，嚴重下降。"},
+{d:"D",q:"Septal flattening that is most marked at END-SYSTOLE indicates:",o:["RV volume overload","RV pressure overload","Constrictive pericarditis","LBBB"],a:1,e:"Systolic flattening = pressure overload; diastolic flattening = volume overload.",z:"收縮期變平 = 壓力負荷。"},
+{d:"D",q:"Which is the most common type of atrial septal defect?",o:["Primum","Secundum","Sinus venosus","Coronary sinus"],a:1,e:"Secundum ASD (~70%) in the fossa ovalis region.",z:"繼發孔型最常見。"},
+{d:"D",q:"A sinus venosus ASD (superior type) is most often associated with:",o:["Cleft mitral valve","Partial anomalous pulmonary venous return","Ebstein anomaly","Coarctation"],a:1,e:"Superior sinus venosus defects are commonly associated with anomalous drainage of the right upper pulmonary vein.",z:"上腔型靜脈竇缺損常合併部分肺靜脈異位引流。"},
+{d:"D",q:"Agitated saline injected into the LEFT arm opacifies a dilated coronary sinus before the RA. Diagnosis:",o:["PFO","Persistent left SVC","Secundum ASD","Pulmonary AVM"],a:1,e:"A persistent LSVC drains into the coronary sinus, which is dilated.",z:"永存左上腔靜脈引流入冠狀竇。"},
+{d:"D",t:"match",q:"Match each tumour with its typical description.",pairs:[["Myxoma","LA mass on a stalk at the fossa ovalis"],["Papillary fibroelastoma","Small frond-like mass on a valve"],["Rhabdomyoma","Multiple ventricular masses in a child with tuberous sclerosis"],["Lipomatous hypertrophy","Dumbbell-shaped IAS sparing the fossa ovalis"]],e:"Classic exam associations for cardiac masses.",z:"腫塊典型特徵配對。"},
+{d:"D",q:"Qp:Qs is calculated as 2.1. This means:",o:["Right-to-left shunt","Significant left-to-right shunt","Normal flow","Severe AS"],a:1,e:"Qp:Qs >1.5 indicates a significant left-to-right shunt (pulmonary flow > systemic).",z:"Qp:Qs >1.5 為明顯左向右分流。"},
+{d:"D",q:"A dissection flap is seen. Which feature identifies the TRUE lumen?",o:["Larger and contains thrombus","Expands in systole with forward flow","Spontaneous echo contrast","No flow on colour"],a:1,e:"The true lumen expands in systole and has forward systolic flow.",z:"真腔收縮期擴張並有前向血流。"},
+{d:"D",q:"Which RV finding is typical of an acute massive PE?",o:["RV hypertrophy >10 mm","McConnell's sign","Annulus reversus","Apical ballooning of LV"],a:1,e:"McConnell's sign: RV free-wall akinesis with preserved apical motion. Chronic PH causes RVH instead.",z:"McConnell 徵象。"},
+{d:"D",q:"LVOT diameter 2.0 cm, LVOT VTI 20 cm, HR 70. Cardiac output is about:",o:["3.1 L/min","4.4 L/min","5.6 L/min","6.3 L/min"],a:1,e:"CSA = 0.785 × 4 = 3.14 cm². SV = 3.14 × 20 = 62.8 mL. CO = 62.8 × 70 = 4.4 L/min.",z:"SV = 62.8 mL，CO = 4.4 L/min。"},
+{d:"D",q:"A spade-shaped LV cavity in diastole with deep T-wave inversions suggests:",o:["LV non-compaction","Apical HCM","Takotsubo","Apical thrombus"],a:1,e:"Apical HCM gives the ace-of-spades cavity; contrast helps confirm.",z:"心尖肥厚型心肌病。"},
+{d:"D",q:"LAVI of 44 mL/m² is classified as:",o:["Normal","Mildly enlarged","Moderately enlarged","Severely enlarged"],a:2,e:"35–41 mild, 42–48 moderate, >48 severe.",z:"42–48 為中度擴大。"},
+{d:"D",q:"Which measurement indicates RV systolic dysfunction?",o:["TAPSE 22 mm","RV S′ 8 cm/s","FAC 45%","RV basal diameter 38 mm"],a:1,e:"RV S′ <9.5 cm/s is abnormal. TAPSE ≥17 mm, FAC ≥35% and basal diameter ≤41 mm are normal.",z:"RV S′ <9.5 cm/s 異常。"},
+{d:"D",q:"An inferior-wall MI with RV dilation and hypokinesis suggests occlusion of the:",o:["Proximal LAD","Proximal RCA","Distal LCx","Left main"],a:1,e:"RV infarction usually accompanies proximal RCA occlusion (RV marginal branches).",z:"近端 RCA 阻塞。"},
+{d:"D",q:"In Ebstein anomaly the diagnostic finding is:",o:["Apical displacement of the septal TV leaflet ≥8 mm/m²","Cleft anterior MV leaflet","Overriding aorta","Absent TV"],a:0,e:"Ebstein: septal leaflet displaced ≥8 mm/m² toward the apex, atrialised RV.",z:"三尖瓣隔葉下移 ≥8 mm/m²。"},
+{d:"D",t:"multi",q:"Select ALL features of Tetralogy of Fallot.",o:["VSD","Overriding aorta","RVOT obstruction","RV hypertrophy","Coarctation"],a:[0,1,2,3],e:"The tetrad: VSD, overriding aorta, RVOT/pulmonary stenosis, RVH.",z:"四聯症：VSD、主動脈騎跨、RVOT 狹窄、右室肥厚。"},
+// ---------- C: valves ----------
+{d:"C",q:"LVOT diameter 2.0 cm, LVOT VTI 22 cm, AV VTI 100 cm. AVA by continuity is:",o:["0.55 cm²","0.69 cm²","0.88 cm²","1.10 cm²"],a:1,e:"CSA = 3.14 cm². AVA = 3.14 × 22 ÷ 100 = 0.69 cm² → severe.",z:"3.14×22/100 = 0.69 cm²，嚴重 AS。"},
+{d:"C",q:"Which set indicates SEVERE aortic stenosis?",o:["Vmax 3.5 m/s, MG 30 mmHg","Vmax 4.2 m/s, MG 45 mmHg, AVA 0.8 cm²","Vmax 2.8 m/s, AVA 1.6 cm²","DVI 0.40"],a:1,e:"Severe AS: Vmax ≥4 m/s, MG ≥40 mmHg, AVA <1.0 cm², DVI <0.25.",z:"嚴重 AS 標準。"},
+{d:"C",q:"Low-flow, low-gradient AS with EF 30%: on low-dose dobutamine SV rises 30%, MG rises to 45 mmHg and AVA stays 0.8 cm². This indicates:",o:["Pseudo-severe AS","True severe AS with contractile reserve","No contractile reserve","Moderate AS"],a:1,e:"SV rise ≥20% = contractile reserve; AVA staying ≤1.0 with MG ≥40 = true severe AS.",z:"真性嚴重 AS 並有收縮儲備。"},
+{d:"C",q:"The single largest source of error in the continuity equation is:",o:["AV VTI","LVOT VTI","LVOT diameter","Heart rate"],a:2,e:"LVOT diameter is squared, so small errors are magnified.",z:"LVOT 直徑被平方。"},
+{d:"C",q:"Which window most often gives the highest AS velocity in addition to apical?",o:["Subcostal","Right parasternal","Left parasternal long axis","Parasternal short axis"],a:1,e:"Right parasternal with a Pedoff probe frequently records the highest AS jet.",z:"右胸骨旁。"},
+{d:"C",q:"AR pressure half-time of 180 ms suggests:",o:["Mild AR","Moderate AR","Severe AR","No AR"],a:2,e:"PHT <200 ms suggests severe AR; >500 ms mild.",z:"PHT <200 ms 提示嚴重 AR。"},
+{d:"C",q:"Holodiastolic flow reversal in the descending aorta with end-diastolic velocity 25 cm/s indicates:",o:["Mild AR","Moderate AR","Severe AR","Coarctation"],a:2,e:"Holodiastolic reversal with end-diastolic V >20 cm/s = severe AR.",z:"全舒張期反流 >20 cm/s = 嚴重 AR。"},
+{d:"C",q:"Premature mitral valve closure on M-mode is a sign of:",o:["Chronic moderate AR","Acute severe AR","Mitral stenosis","HCM"],a:1,e:"In acute severe AR, LV diastolic pressure rises rapidly and closes the MV early.",z:"急性嚴重 AR。"},
+{d:"C",q:"Mitral PHT is 220 ms. MVA is:",o:["0.5 cm²","1.0 cm²","1.5 cm²","2.2 cm²"],a:1,e:"MVA = 220 ÷ PHT = 220 ÷ 220 = 1.0 cm².",z:"220/220 = 1.0 cm²。"},
+{d:"C",q:"The reference method for MVA in rheumatic MS is:",o:["PHT","Continuity","2D planimetry at the leaflet tips","PISA"],a:2,e:"Planimetry in PSAX at the tips in mid-diastole is the reference (not affected by flow conditions).",z:"瓣尖平面描記為參考。"},
+{d:"C",q:"MVA by PHT is LEAST reliable:",o:["In normal sinus rhythm","Immediately after balloon valvotomy","With mild TR","In a young patient"],a:1,e:"Right after valvotomy (and with significant AR or abnormal LV compliance) atrial and ventricular compliance change, making PHT unreliable.",z:"球囊擴張術後早期不可靠。"},
+{d:"C",q:"Which is a criterion for SEVERE MR?",o:["VC 0.4 cm","EROA 0.25 cm²","Pulmonary vein systolic flow reversal","Regurgitant fraction 35%"],a:2,e:"Systolic flow reversal in pulmonary veins is specific for severe MR. Severe: VC ≥0.7, EROA ≥0.40, RF ≥50%.",z:"肺靜脈收縮期反流 = 嚴重 MR。"},
+{d:"C",q:"PISA radius 1.0 cm, aliasing velocity 40 cm/s, MR Vmax 500 cm/s, MR VTI 150 cm. Regurgitant volume is about:",o:["30 mL","50 mL","75 mL","100 mL"],a:2,e:"Flow = 2π × 1² × 40 = 251 mL/s. EROA = 251 ÷ 500 = 0.50 cm². RVol = 0.50 × 150 = 75 mL → severe.",z:"EROA 0.50 cm²，RVol 75 mL。"},
+{d:"C",q:"An eccentric MR jet directed ANTERIORLY along the anterior leaflet suggests:",o:["Anterior leaflet prolapse","Posterior leaflet prolapse/flail","Annular dilation","Rheumatic restriction of anterior leaflet"],a:1,e:"The jet goes away from the prolapsing leaflet: posterior prolapse → anterior jet.",z:"後葉脫垂 → 射流向前。"},
+{d:"C",q:"Ischaemic MR from tethering of the posterior leaflet is Carpentier type:",o:["I","II","IIIa","IIIb"],a:3,e:"IIIb = restricted systolic leaflet motion (ischaemic/functional).",z:"IIIb。"},
+{d:"C",t:"match",q:"Match each Carpentier type with its mechanism.",pairs:[["Type I","Normal leaflet motion — annular dilation or perforation"],["Type II","Excessive motion — prolapse or flail"],["Type IIIa","Restricted in systole and diastole — rheumatic"],["Type IIIb","Restricted in systole — ischaemic tethering"]],e:"Carpentier functional classification of MR.",z:"Carpentier 功能分型。"},
+{d:"C",q:"MVP should be diagnosed in which view?",o:["Apical 4-chamber","Parasternal long axis","Subcostal 4-chamber","PSAX at MV level"],a:1,e:"The saddle-shaped annulus makes A4C overcall prolapse; use PLAX (>2 mm above annular plane).",z:"PLAX。"},
+{d:"C",q:"Which is a criterion for SEVERE TR?",o:["Jet area 4 cm²","VC 0.8 cm","Hepatic vein systolic dominance","Faint parabolic CW"],a:1,e:"Severe TR: VC ≥0.7 cm, EROA ≥0.40, RVol ≥45 mL, hepatic systolic reversal, dense triangular CW, jet area >10 cm².",z:"VC ≥0.7 cm 為嚴重 TR。"},
+{d:"C",q:"Thickened, retracted, immobile tricuspid and pulmonic leaflets in a patient with flushing and diarrhoea suggest:",o:["Rheumatic disease","Carcinoid heart disease","Ebstein anomaly","Endocarditis"],a:1,e:"Carcinoid affects right-sided valves; left-sided only with PFO or lung metastases.",z:"類癌心臟病。"},
+{d:"C",q:"Pulmonic stenosis peak velocity 4.5 m/s indicates:",o:["Mild","Moderate","Severe","Normal"],a:2,e:"Peak V >4 m/s (gradient >64 mmHg) = severe PS.",z:"嚴重 PS。"},
+{d:"C",q:"A bileaflet mechanical MV shows three small closing jets inside the sewing ring. These are:",o:["Paravalvular leaks","Normal washing jets","Valve thrombosis","Dehiscence"],a:1,e:"Small, short 'washing' jets are designed into mechanical valves to reduce thrombus.",z:"正常沖洗射流。"},
+{d:"C",q:"Prosthetic AV: Vmax 4.3 m/s, DVI 0.22, acceleration time 120 ms. This suggests:",o:["Normal function","High flow state","Prosthetic stenosis","Patient–prosthesis mismatch only"],a:2,e:"DVI <0.25 and AT >100 ms (rounded jet) point to obstruction. High flow keeps DVI normal; PPM usually keeps AT short.",z:"人工瓣狹窄。"},
+{d:"C",q:"Indexed EOA of 0.60 cm²/m² in a normally functioning aortic prosthesis indicates:",o:["Normal","Moderate PPM","Severe PPM","Paravalvular leak"],a:2,e:"Aortic PPM: ≤0.85 moderate, ≤0.65 severe.",z:"嚴重人工瓣-患者不匹配。"},
+{d:"C",q:"A prosthetic MV with VTI ratio (PrMV/LVOT) 2.8 and PHT 90 ms suggests:",o:["Stenosis","Significant regurgitation","Normal","PPM"],a:1,e:"High VTI ratio with a NORMAL PHT suggests increased flow from regurgitation. Stenosis would prolong PHT (>200 ms).",z:"VTI 比值高但 PHT 正常 → 明顯反流。"},
+{d:"C",q:"Vegetations on the aortic valve typically attach to the:",o:["Aortic side","Ventricular (LVOT) side","Annulus only","Sinus of Valsalva"],a:1,e:"Vegetations form on the low-pressure side of the jet: ventricular side of semilunar valves.",z:"心室面（低壓側）。"},
+{d:"C",q:"An echolucent space in the posterior aortic root of a patient with prosthetic AV endocarditis is most likely:",o:["Normal sinus","Perivalvular abscess","Lipoma","Myxoma"],a:1,e:"Perivalvular abscess (often at the aortic–mitral curtain). TEE is preferred.",z:"瓣周膿腫。"},
+{d:"C",q:"The most common congenital cardiac anomaly overall is:",o:["Secundum ASD","Bicuspid aortic valve","Perimembranous VSD","PDA"],a:1,e:"Bicuspid AV occurs in 1–2% of the population.",z:"二葉主動脈瓣。"},
+{d:"C",t:"multi",q:"Select ALL that are supportive signs of SEVERE AR.",o:["VC 0.7 cm","Jet width/LVOT 70%","PHT 600 ms","RF 55%","Brief early-diastolic reversal in descending aorta"],a:[0,1,3],e:"Severe: VC >0.6, jet width ≥65%, PHT <200, RF ≥50%, holodiastolic reversal. PHT 600 and brief reversal suggest mild.",z:"VC >0.6、射流寬 ≥65%、RF ≥50%。"},
+{d:"C",q:"The Wilkins score assesses all EXCEPT:",o:["Leaflet mobility","Leaflet thickening","Commissural calcium only","Subvalvular thickening","Calcification"],a:2,e:"Wilkins: mobility, thickening, calcification, subvalvular apparatus. Commissural calcium is assessed in other scores.",z:"Wilkins 四項：活動度、增厚、鈣化、瓣下結構。"},
+{d:"C",q:"Severe tricuspid stenosis is suggested by a mean gradient of:",o:["2 mmHg","3 mmHg","≥5 mmHg","≥10 mmHg"],a:2,e:"TS severe: MG ≥5 mmHg, PHT ≥190 ms, TVA ≤1.0 cm².",z:"≥5 mmHg。"},
+// ---------- B: imaging ----------
+{d:"B",q:"Ultrasound enhancing agent is indicated when how many contiguous LV segments are not visualised?",o:["1","2 or more","4 or more","6 or more"],a:1,e:"Contrast is recommended when ≥2 contiguous segments are not seen.",z:"≥2 個相鄰節段。"},
+{d:"B",q:"During contrast LV opacification you see swirling in the apex. The best adjustment is to:",o:["Raise the MI","Give more contrast or lower the MI","Increase gain","Use fundamental imaging"],a:1,e:"Swirling means bubble destruction or too little contrast: lower the MI or increase the dose.",z:"降低 MI 或增加造影劑。"},
+{d:"B",q:"Bubbles appear in the LA 6 cardiac cycles after RA opacification, entering from the pulmonary veins. Most likely:",o:["PFO","Secundum ASD","Intrapulmonary shunt","Persistent LSVC"],a:2,e:"Late appearance (>3–5 cycles) from the pulmonary veins indicates an intrapulmonary shunt.",z:"肺內分流。"},
+{d:"B",q:"Which manoeuvre increases detection of a PFO during a bubble study?",o:["Inspiration hold","Release of Valsalva","Left lateral decubitus","Handgrip"],a:1,e:"Releasing Valsalva transiently raises RA pressure above LA pressure.",z:"Valsalva 釋放。"},
+{d:"B",q:"A 60-year-old's target heart rate for stress echo is:",o:["136 bpm","145 bpm","160 bpm","170 bpm"],a:0,e:"(220 − 60) × 0.85 = 136 bpm.",z:"(220−60)×0.85 = 136。"},
+{d:"B",q:"On treadmill stress echo, post-exercise images should be acquired within:",o:["15 s","60–90 s","3 min","5 min"],a:1,e:"Wall-motion abnormalities can resolve quickly, so image within 60–90 s (ideally <60 s).",z:"60–90 秒內。"},
+{d:"B",q:"On DSE a segment improves at low dose and worsens at peak dose. This is:",o:["Scar","Normal","Viable but ischaemic myocardium","Stunned only"],a:2,e:"Biphasic response = viable myocardium with ischaemia.",z:"雙相反應：存活但缺血。"},
+{d:"B",q:"A patient becomes cyanotic after TEE with a normal arterial PaO₂. Suspect:",o:["Aspiration","Methaemoglobinaemia from benzocaine","Oesophageal perforation","Vasovagal reaction"],a:1,e:"Topical benzocaine can cause methaemoglobinaemia (pulse oximetry ~85%, chocolate-coloured blood).",z:"苯佐卡因致高鐵血紅蛋白症。"},
+{d:"B",q:"Which TEE view best shows the interatrial septum, SVC and IVC together?",o:["ME four-chamber","ME bicaval","ME AV SAX","Transgastric SAX"],a:1,e:"ME bicaval at ~90–110°.",z:"ME 雙腔切面。"},
+{d:"B",q:"Which is an ABSOLUTE contraindication to TEE?",o:["Atrial fibrillation","Oesophageal stricture","Prosthetic MV","Prior CABG"],a:1,e:"Oesophageal stricture, tumour, perforation and active upper GI bleed are absolute contraindications.",z:"食道狹窄。"},
+{d:"B",q:"The Doppler angle is 30°. Velocity is underestimated by about:",o:["0%","6%","13%","50%"],a:2,e:"cos 30° = 0.87 → ~13% underestimation.",z:"cos30° = 0.87，低估約 13%。"},
+{d:"B",q:"Which Doppler mode has range resolution but is limited by aliasing?",o:["CW","PW","Colour M-mode","Non-imaging Pedoff"],a:1,e:"PW samples a specific depth but aliases above the Nyquist limit.",z:"PW。"},
+{d:"B",t:"match",q:"Match each finding with the best window.",pairs:[["Coarctation","Suprasternal notch"],["Secundum ASD","Subcostal"],["LVOT diameter","Parasternal long axis"],["Biplane LVEF","Apical 4 & 2 chamber"]],e:"Each window has a classic job.",z:"各窗口的經典用途。"},
+{d:"B",q:"EPSS of 12 mm on M-mode suggests:",o:["Normal LV function","Reduced LVEF","Mitral stenosis","HCM"],a:1,e:"EPSS >7 mm correlates with reduced EF (or AR / MS can affect it).",z:"EPSS >7 mm 提示 EF 下降。"},
+{d:"B",q:"For TDI e′ measurements you should:",o:["Raise wall filter and gain","Lower wall filter and gain, small sample volume at the annulus","Use CW","Use the highest Nyquist possible"],a:1,e:"Myocardial signals are low velocity and high amplitude: lower filter, low gain, 5–10 mm sample at the annulus.",z:"低壁濾波、低增益。"},
+{d:"B",q:"A 3D full-volume LV acquisition shows step-like discontinuities. The cause is:",o:["Too low MI","Stitching artefact from arrhythmia or breathing","Harmonic imaging","Low line density"],a:1,e:"Multi-beat 3D acquisitions stitch sub-volumes; movement or irregular rhythm causes stitching.",z:"拼接偽影。"},
+{d:"B",q:"GLS changes from −21% at baseline to −16% during chemotherapy. The relative change is:",o:["5%, not significant","24%, suggests cardiotoxicity","−5%, improvement","Cannot be judged"],a:1,e:"(21 − 16)/21 = 24% relative fall (>15% is significant).",z:"相對下降 24% >15%，提示心臟毒性。"},
+{d:"B",q:"Which is the correct high-MI use in contrast echo?",o:["LV opacification","'Flash' to destroy microbubbles for perfusion replenishment","Reducing swirling","Bubble study"],a:1,e:"A brief high-MI flash clears bubbles; replenishment shows myocardial perfusion.",z:"高 MI 閃爆用於灌注評估。"},
+// ---------- E: physics ----------
+{d:"E",q:"The wavelength of a 3 MHz transducer in soft tissue is about:",o:["0.15 mm","0.51 mm","1.5 mm","5.1 mm"],a:1,e:"λ = 1.54 ÷ 3 = 0.51 mm.",z:"1.54/3 = 0.51 mm。"},
+{d:"E",q:"Which change improves AXIAL resolution?",o:["Lower frequency","Increase pulse cycles","Higher frequency","Increase depth"],a:2,e:"Axial resolution = SPL/2; higher frequency shortens λ and SPL.",z:"提高頻率。"},
+{d:"E",q:"Lateral resolution is best:",o:["In the near field","At the focus","In the far field","It is constant"],a:1,e:"Lateral resolution equals beam width, narrowest at the focus.",z:"焦點處最好。"},
+{d:"E",q:"A reflector produces an echo returning 130 µs after transmission. Its depth is:",o:["5 cm","10 cm","13 cm","20 cm"],a:1,e:"13 µs per cm → 130 ÷ 13 = 10 cm.",z:"130/13 = 10 cm。"},
+{d:"E",q:"Total attenuation of a 4 MHz beam travelling 5 cm into soft tissue (one way):",o:["2 dB","5 dB","10 dB","20 dB"],a:2,e:"0.5 × 4 × 5 = 10 dB.",z:"0.5×4×5 = 10 dB。"},
+{d:"E",q:"Intensity drops by 3 dB. The new intensity is:",o:["One-third","Half","One-tenth","Unchanged"],a:1,e:"−3 dB = half the intensity.",z:"−3 dB = 一半。"},
+{d:"E",q:"PRF is 8 kHz. The Nyquist limit is:",o:["2 kHz","4 kHz","8 kHz","16 kHz"],a:1,e:"Nyquist = PRF ÷ 2.",z:"PRF/2 = 4 kHz。"},
+{d:"E",t:"multi",q:"Select ALL actions that reduce PW aliasing.",o:["Shift the baseline","Increase the velocity scale (PRF)","Increase sample volume depth","Use a lower-frequency transducer","Switch to CW"],a:[0,1,3,4],e:"Deeper sampling LOWERS the max PRF and worsens aliasing.",z:"增加取樣深度會加重混疊。"},
+{d:"E",q:"Which change will INCREASE frame rate?",o:["Increase depth","Add focal zones","Narrow the sector","Increase line density"],a:2,e:"Fewer lines per frame (narrow sector) shortens frame time.",z:"縮窄扇區。"},
+{d:"E",q:"Equally spaced parallel bright lines deep to the pericardium are:",o:["Mirror image","Reverberation","Refraction","Side lobe"],a:1,e:"Reverberation: multiple reflections between two strong reflectors.",z:"混響。"},
+{d:"E",q:"A second copy of the heart appears side-by-side (lateral) to the real one. This is:",o:["Mirror image","Refraction","Reverberation","Range ambiguity"],a:1,e:"Refraction displaces objects laterally, producing a side-by-side duplicate.",z:"折射。"},
+{d:"E",q:"A copy of a structure appears DEEPER than the true one, behind a strong reflector. This is:",o:["Mirror image","Refraction","Side lobe","Comet tail"],a:0,e:"Mirror image artefacts are placed deeper along the beam, beyond a strong specular reflector.",z:"鏡像偽影。"},
+{d:"E",q:"Range ambiguity places echoes:",o:["Too deep","Too shallow","Laterally","In the correct place"],a:1,e:"Echoes from earlier pulses return after the next pulse is sent and are placed too shallow.",z:"太淺。"},
+{d:"E",q:"Following ALARA, an image is too dark. The FIRST step should be:",o:["Increase output power","Increase receiver gain","Increase MI","Change transducer"],a:1,e:"Increase receiver gain before transmit power — no extra patient exposure.",z:"先提高接收增益。"},
+{d:"E",q:"The mechanical index relates mainly to:",o:["Tissue heating","Cavitation","Frame rate","Attenuation"],a:1,e:"MI = peak rarefactional pressure ÷ √f; predicts cavitation risk.",z:"空化。"},
+{d:"E",q:"Matching layer thickness is:",o:["λ/2","λ/4","2λ","λ"],a:1,e:"Matching layer = ¼ wavelength; the PZT crystal = ½ wavelength.",z:"λ/4。"},
+{d:"E",q:"Propagation speed depends on:",o:["Frequency","Amplitude","The medium","Power"],a:2,e:"Speed is determined only by the medium's stiffness and density.",z:"介質。"},
+{d:"E",q:"Which can only be applied BEFORE an image is frozen?",o:["Read zoom","Write zoom","Colour map (B-colour)","Contrast variation"],a:1,e:"Write zoom is pre-processing; read zoom is post-processing.",z:"寫放大為前處理。"},
+{d:"E",t:"match",q:"Match the artefact with its mechanism.",pairs:[["Shadowing","High attenuation behind a strong reflector/calcium"],["Enhancement","Low attenuation behind fluid"],["Grating lobes","Off-axis energy from array transducers"],["Comet tail","Closely spaced reverberation from a small strong reflector"]],e:"Artefact mechanisms.",z:"偽影機制配對。"},
+{d:"E",q:"Harmonic imaging improves image quality because:",o:["It uses a lower receive frequency","Harmonics form in tissue and have fewer near-field and side-lobe artefacts","It increases frame rate","It reduces MI"],a:1,e:"Harmonics are produced as the beam travels through tissue, mostly in the strong central beam.",z:"諧波在組織中產生，偽影較少。"},
+{d:"E",q:"Reflection at a boundary requires:",o:["Oblique incidence","Different propagation speeds","Different acoustic impedances","High frequency"],a:2,e:"Reflection needs an impedance mismatch. Refraction needs oblique incidence and different speeds.",z:"需聲阻抗差。"},
+{d:"E",q:"A 2.0 MHz transducer produces a Doppler shift that is ___ the shift from a 4.0 MHz transducer at the same velocity.",o:["Twice","Half","Equal to","Four times"],a:1,e:"Δf ∝ f₀, so halving frequency halves the shift — less aliasing.",z:"頻移減半。"},
+// ---------- A: preparation ----------
+{d:"A",q:"Before starting an echo, the sonographer should confirm patient identity using:",o:["Room number","Two identifiers such as name and DOB","Wristband colour","Referring doctor's name"],a:1,e:"Two patient-specific identifiers are required.",z:"兩個識別資料。"},
+{d:"A",q:"You find a large pericardial effusion with RV diastolic collapse. The correct action is to:",o:["Finish the full protocol, then write a note","Notify the physician immediately","Tell the patient they have tamponade","Book a follow-up echo"],a:1,e:"Tamponade signs are a critical finding — notify the physician immediately and document.",z:"立即通知醫生。"},
+{d:"A",q:"Which posture reduces sonographer musculoskeletal injury?",o:["Shoulder abducted 90°","Shoulder abduction <30° with arm supported","Wrist flexed","Leaning over the bed"],a:1,e:"Keep shoulder abduction under 30°, neutral wrist, supported arm and cable.",z:"肩外展 <30°。"},
+{d:"A",q:"Why is blood pressure recorded at the time of the echo?",o:["Billing","To calculate LAP, LVEDP and shunt pressures","To set TGC","It is not needed"],a:1,e:"BP is used with Doppler gradients to estimate intracardiac pressures.",z:"用於計算心內壓力。"},
+{d:"A",q:"A patient asks whether their valve is 'bad'. The sonographer should:",o:["Give the severity grade","Explain that the physician will interpret the study and discuss results","Ignore the question","Show the worst images"],a:1,e:"Diagnosis and results are communicated by the interpreting physician.",z:"由醫生解釋結果。"},
+{d:"A",t:"multi",q:"Select ALL findings that should be reported as critical results.",o:["Aortic dissection flap","Mobile LV thrombus","Trace MR","Large mobile vegetation","Mild LVH"],a:[0,1,3],e:"Critical: dissection, tamponade, mobile thrombus/vegetation, rupture, prosthetic thrombosis.",z:"夾層、活動血栓、大型贅生物。"}
+];
+const QUIZ=QUIZ_RAW.map((x,i)=>Object.assign({id:"q"+i,t:x.t||"mcq"},x));
+/* ---------- shared helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const fmt=(n,d=1)=>(n==null||!isFinite(n))?"—":(+n).toFixed(d).replace(/\.0+$/,"").replace(/(\.\d*?)0+$/,"$1");
+const zh=t=>t?`<span class="zh">${t}</span>`:"";
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- 17-segment bull's-eye ---------- */
+const SEGS={
+ 1:["Basal anterior","LAD","A2C · PSAX basal"],2:["Basal anteroseptal","LAD","A3C/PLAX · PSAX basal"],3:["Basal inferoseptal","RCA","A4C · PSAX basal"],
+ 4:["Basal inferior","RCA","A2C · PSAX basal"],5:["Basal inferolateral","LCx","A3C/PLAX · PSAX basal"],6:["Basal anterolateral","LCx","A4C · PSAX basal"],
+ 7:["Mid anterior","LAD","A2C · PSAX mid"],8:["Mid anteroseptal","LAD","A3C/PLAX · PSAX mid"],9:["Mid inferoseptal","RCA","A4C · PSAX mid"],
+ 10:["Mid inferior","RCA","A2C · PSAX mid"],11:["Mid inferolateral","LCx","A3C · PSAX mid"],12:["Mid anterolateral","LCx","A4C · PSAX mid"],
+ 13:["Apical anterior","LAD","A2C · PSAX apical"],14:["Apical septal","LAD","A4C · PSAX apical"],15:["Apical inferior","RCA or LAD (wrap-around)","A2C · PSAX apical"],
+ 16:["Apical lateral","LCx or LAD","A4C · PSAX apical"],17:["Apex (apical cap)","LAD","All apical views"]};
+const ART_COLOR={LAD:"var(--away)",RCA:"var(--toward)",LCx:"var(--warn)"};
+function segArtery(n){return SEGS[n][1].split(" ")[0]}
+function arc(cx,cy,r1,r2,a1,a2){const p=(r,a)=>[cx+r*Math.cos(a*Math.PI/180),cy-r*Math.sin(a*Math.PI/180)];
+ const [x1,y1]=p(r2,a1),[x2,y2]=p(r2,a2),[x3,y3]=p(r1,a2),[x4,y4]=p(r1,a1);const lg=(a2-a1)>180?1:0;
+ return `M${x1.toFixed(2)},${y1.toFixed(2)} A${r2},${r2} 0 ${lg} 0 ${x2.toFixed(2)},${y2.toFixed(2)} L${x3.toFixed(2)},${y3.toFixed(2)} A${r1},${r1} 0 ${lg} 1 ${x4.toFixed(2)},${y4.toFixed(2)}Z`}
+function bullseyeSVG(opts={}){const cx=150,cy=150;let out="";
+ const ring=(start,r1,r2,n,offset)=>{for(let i=0;i<n;i++){const seg=start+i;const c=offset+i*(360/n);const a1=c-180/n,a2=c+180/n;
+   const lab=[cx+((r1+r2)/2)*Math.cos(c*Math.PI/180),cy-((r1+r2)/2)*Math.sin(c*Math.PI/180)];
+   out+=`<path class="seg" data-seg="${seg}" d="${arc(cx,cy,r1,r2,a1,a2)}" fill="${opts.plain?"var(--panel-2)":ART_COLOR[segArtery(seg)]}" fill-opacity="${opts.plain?1:.32}"></path><text x="${lab[0].toFixed(1)}" y="${(lab[1]+4).toFixed(1)}" text-anchor="middle" font-size="12" font-family="var(--f-mono)" fill="var(--fg)" pointer-events="none">${seg}</text>`}};
+ ring(1,100,138,6,90);ring(7,62,100,6,90);ring(13,28,62,4,90);
+ out+=`<circle class="seg" data-seg="17" cx="${cx}" cy="${cy}" r="28" fill="${opts.plain?"var(--panel-2)":ART_COLOR.LAD}" fill-opacity="${opts.plain?1:.32}"></circle><text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="12" font-family="var(--f-mono)" fill="var(--fg)" pointer-events="none">17</text>`;
+ const lbl=(x,y,t)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="10.5" font-family="var(--f-display)" font-weight="700" letter-spacing=".08em" fill="var(--muted)">${t}</text>`;
+ out+=lbl(150,8,"ANTERIOR")+lbl(150,299,"INFERIOR")+`<text x="6" y="152" font-size="10.5" font-family="var(--f-display)" font-weight="700" letter-spacing=".08em" fill="var(--muted)">SEPTAL</text><text x="294" y="152" text-anchor="end" font-size="10.5" font-family="var(--f-display)" font-weight="700" letter-spacing=".08em" fill="var(--muted)">LATERAL</text>`;
+ return `<svg viewBox="0 0 300 302" width="300" role="img" aria-label="17-segment bull's-eye plot">${out}</svg>`}
+function wBullseye(el){
+ el.innerHTML=`<div class="grid g2" style="align-items:center"><div>${bullseyeSVG()}</div><div class="stack"><div class="legend"><span><i style="background:var(--away)"></i>LAD</span><span><i style="background:var(--toward)"></i>RCA</span><span><i style="background:var(--warn)"></i>LCx</span></div><div class="tree-node" id="segInfo"><span class="label">Selected segment</span><h3>Click any segment</h3><p class="zh">點擊任何節段</p></div><p class="cite">Coronary assignment follows the ASE/AHA model. Apical inferior and apical lateral segments vary with dominance and LAD wrap-around.</p></div></div>`;
+ $$(".seg",el).forEach(s=>s.addEventListener("click",()=>{const n=+s.dataset.seg,i=SEGS[n];
+  $$(".seg",el).forEach(x=>x.setAttribute("fill-opacity",x===s?".85":".32"));
+  $("#segInfo",el).innerHTML=`<span class="label">Segment ${n}</span><h3>${i[0]}</h3><div class="row"><span class="pill ${i[1].startsWith("LAD")?"info":i[1].startsWith("RCA")?"bad":"warn"}">${i[1]}</span></div><p><b>Seen in:</b> ${i[2]}</p>`}))}
+
+/* ---------- echo view schematics ---------- */
+const FAN=`<path d="M150,8 L18,190 A170,170 0 0 0 282,190 Z" fill="var(--panel)" stroke="var(--line)"/>`;
+const T=(x,y,t,a="middle")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="11" font-family="var(--f-mono)" fill="var(--fg)">${t}</text>`;
+const CH=(d)=>`<path d="${d}" fill="var(--bg)" stroke="var(--bmode)" stroke-width="2.5" stroke-linejoin="round"/>`;
+const VALVE=(d,c="var(--toward)")=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
+const VIEWS={
+ PLAX:{name:"Parasternal long axis",zh:"胸骨旁長軸",svg:CH("M60,58 Q150,40 250,60 L250,78 Q150,62 60,82Z")+CH("M45,110 Q60,95 130,98 L170,104 L170,170 Q100,182 52,160 Q36,138 45,110Z")+CH("M178,92 L262,86 L262,118 L178,118Z")+CH("M180,128 Q232,120 248,150 Q240,185 196,182 Q176,165 180,128Z")+`<circle cx="232" cy="196" r="10" fill="var(--bg)" stroke="var(--bmode)" stroke-width="2.5"/>`+VALVE("M178,96 L194,106 M178,116 L194,108")+VALVE("M172,106 L190,132 M172,168 L186,148")+T(150,72,"RV")+T(100,140,"LV")+T(220,106,"Ao")+T(214,160,"LA")+T(232,216,"DAo")+T(150,92,"IVS"),
+  sees:["RV (anterior), IVS, LV, posterior wall","Aortic root, AV (right & non-coronary cusps)","MV: A2 & P2 scallops","LA, coronary sinus, descending aorta"],walls:"Anteroseptal and inferolateral",use:"LV linear dimensions, LVOT diameter, MVP, root size, pericardial vs pleural fluid"},
+ PSAXAV:{name:"PSAX — aortic valve level",zh:"胸骨旁短軸 — 主動脈瓣",svg:CH("M60,80 Q110,40 200,52 Q250,62 262,104 L240,108 Q232,78 196,72 Q120,64 80,98Z")+`<circle cx="160" cy="118" r="34" fill="var(--bg)" stroke="var(--bmode)" stroke-width="2.5"/>`+VALVE("M160,118 L160,86 M160,118 L131,134 M160,118 L189,134")+CH("M70,120 Q60,165 105,175 Q125,160 120,140 Q100,118 70,120Z")+CH("M128,160 Q160,190 200,168 Q205,195 160,205 Q120,195 128,160Z")+VALVE("M98,104 L112,124","var(--away)")+VALVE("M244,100 L258,116","var(--away)")+T(100,150,"RA")+T(160,192,"LA")+T(160,68,"RVOT")+T(160,122,"Ao")+T(250,132,"PV")+T(86,96,"TV"),
+  sees:["AV: right (anterior), left & non-coronary cusps — 'Mercedes' sign","TV, RVOT, PV, main PA","LA, RA, interatrial septum","Perimembranous VSD (~10–11 o'clock), outlet VSD (~1–2 o'clock)"],walls:"None (valve level)",use:"Bicuspid AV, VSD location, PDA (with PA bifurcation), RVOT AT"},
+ A4C:{name:"Apical four-chamber",zh:"心尖四腔",svg:CH("M150,22 Q100,60 92,128 L148,128 L148,30Z")+CH("M152,24 L152,128 L222,128 Q214,58 152,24Z")+CH("M90,138 L146,138 L146,192 Q92,200 84,170Z")+CH("M154,138 L224,138 Q232,182 206,196 Q164,200 154,180Z")+VALVE("M92,132 L116,140 M146,132 L130,140","var(--away)")+VALVE("M154,132 L176,141 M222,132 L198,141")+T(120,96,"RV")+T(188,96,"LV")+T(116,172,"RA")+T(190,172,"LA")+T(150,16,"apex"),
+  sees:["All four chambers, MV & TV, IAS & IVS","Septal & anterior TV leaflets; A2/A3 & P1 of MV (approx.)","Pulmonary veins entering LA"],walls:"Inferoseptal and anterolateral",use:"Biplane EF (with A2C), mitral inflow, e′, TR jet, RV size & TAPSE, LAVI"},
+ A2C:{name:"Apical two-chamber",zh:"心尖兩腔",svg:CH("M150,22 Q90,64 92,132 L208,132 Q210,64 150,22Z")+CH("M100,142 L200,142 Q214,186 180,198 Q130,204 100,184Z")+`<path d="M196,150 q22,-6 26,12 q-6,14 -24,6" fill="var(--bg)" stroke="var(--bmode)" stroke-width="2"/>`+VALVE("M100,136 L128,145 M200,136 L172,145")+T(150,96,"LV")+T(150,176,"LA")+T(226,150,"LAA","start")+T(80,96,"inferior","end")+T(222,96,"anterior","start"),
+  sees:["LV, LA, LAA","MV: P3–A2–P1 (bicommissural view)","Coronary sinus near the AV groove"],walls:"Inferior (left of screen) and anterior (right)",use:"Biplane EF, LV thrombus, LAA, anterior/inferior wall motion"},
+ A3C:{name:"Apical three-chamber (APLAX)",zh:"心尖三腔（長軸）",svg:CH("M150,22 Q92,66 94,132 L172,132 Q214,92 150,22Z")+CH("M100,142 L162,142 Q172,186 140,198 Q104,198 96,176Z")+CH("M178,118 L230,152 L214,170 L166,140Z")+VALVE("M100,136 L124,146 M160,136 L140,146")+VALVE("M182,128 L196,140 M170,140 L192,148","var(--away)")+T(132,96,"LV")+T(130,176,"LA")+T(212,150,"Ao")+T(84,96,"inferolat.","end"),
+  sees:["LV, LVOT, AV, aortic root, LA","MV A2–P2","Same plane as PLAX from the apex"],walls:"Anteroseptal and inferolateral",use:"AS / LVOT Doppler, HCM gradient, AR jet, wall motion"},
+ SUB:{name:"Subcostal four-chamber",zh:"劍突下四腔",svg:`<path d="M150,8 L60,70 L240,70Z" fill="var(--panel-2)" opacity=".7"/>`+CH("M70,92 Q130,74 210,98 L200,120 Q130,104 80,116Z")+CH("M84,128 Q140,112 196,128 Q200,160 150,170 Q96,164 84,128Z")+CH("M100,178 L148,174 L150,196 Q112,206 96,194Z")+CH("M156,174 L206,170 Q218,190 200,200 L158,200Z")+T(150,48,"liver")+T(140,106,"RV")+T(142,148,"LV")+T(122,192,"RA")+T(182,192,"LA"),
+  sees:["IAS perpendicular to the beam — best for ASD","RV free wall (thickness), pericardial effusion","IVC (rotate to subcostal IVC view)"],walls:"Inferoseptal and anterolateral",use:"ASD, effusion, RVH, IVC/RAP estimate, poor parasternal windows"},
+ SSN:{name:"Suprasternal notch — aortic arch",zh:"胸骨上窩 — 主動脈弓",svg:`<path d="M70,180 Q70,70 150,64 Q232,70 232,190" fill="none" stroke="var(--bmode)" stroke-width="22" stroke-linecap="round" opacity=".25"/><path d="M70,180 Q70,70 150,64 Q232,70 232,190" fill="none" stroke="var(--bmode)" stroke-width="2.5"/>`+`<path d="M108,82 L96,30 M150,64 L150,22 M190,76 L208,28" stroke="var(--bmode)" stroke-width="5" stroke-linecap="round"/>`+`<ellipse cx="150" cy="128" rx="24" ry="16" fill="var(--bg)" stroke="var(--away)" stroke-width="2.5"/>`+T(92,22,"BCT")+T(150,16,"LCCA")+T(214,22,"LSA")+T(150,132,"RPA")+T(70,198,"asc Ao")+T(232,206,"desc Ao"),
+  sees:["Ascending aorta, arch, descending aorta","Brachiocephalic, left common carotid, left subclavian","Right pulmonary artery in cross-section"],walls:"—",use:"Coarctation, dissection, AR holodiastolic reversal, AS Vmax"}};
+function wViews(el){const keys=Object.keys(VIEWS);
+ el.innerHTML=`<div class="row" role="group" aria-label="Echo views">${keys.map((k,i)=>`<button class="chip" data-k="${k}" aria-pressed="${i===0}">${k==="PSAXAV"?"PSAX-AV":k==="SUB"?"Subcostal":k}</button>`).join("")}</div><div class="grid g2" style="align-items:start"><div id="vSvg"></div><div id="vInfo" class="stack"></div></div>`;
+ const show=k=>{const v=VIEWS[k];$("#vSvg",el).innerHTML=`<svg viewBox="0 0 300 225" width="340" role="img" aria-label="${v.name} schematic">${k==="SSN"?"":FAN}${v.svg}</svg>`;
+  $("#vInfo",el).innerHTML=`<div><h3>${v.name}</h3>${zh(v.zh)}</div><div><span class="label">You see</span><ul class="bul">${v.sees.map(s=>`<li>${s}</li>`).join("")}</ul></div><div><span class="label">LV walls</span><p>${v.walls}</p></div><div><span class="label">Main uses</span><p>${v.use}</p></div><p class="cite">Schematic, not to scale. Red = MV/AV, blue = TV/PV.</p>`;
+  $$(".chip",el).forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===k))};
+ $$(".chip",el).forEach(c=>c.addEventListener("click",()=>show(c.dataset.k)));show(keys[0])}
+
+/* ---------- diastolic function (2016 ASE) ---------- */
+function diastolicGrade(v){const steps=[];const ok=x=>x!=null&&!isNaN(x);
+ const avgE=(ok(v.sep)&&ok(v.lat))?(v.sep+v.lat)/2:null;const EeAvg=(ok(v.E)&&avgE)?v.E/avgE:null;
+ if(v.ef==="normal"){
+  const crit=[["Average E/e′ >14",EeAvg==null?null:EeAvg>14,EeAvg==null?"—":fmt(EeAvg)],
+   ["Septal e′ <7 or lateral e′ <10 cm/s",(ok(v.sep)||ok(v.lat))?((ok(v.sep)&&v.sep<7)||(ok(v.lat)&&v.lat<10)):null,`${fmt(v.sep)} / ${fmt(v.lat)}`],
+   ["TR velocity >2.8 m/s",ok(v.tr)?v.tr>2.8:null,fmt(v.tr,2)],["LAVI >34 mL/m²",ok(v.lavi)?v.lavi>34:null,fmt(v.lavi)]];
+  const av=crit.filter(c=>c[1]!==null),pos=av.filter(c=>c[1]).length;
+  crit.forEach(c=>steps.push(`${c[0]}: ${c[2]} → ${c[1]===null?"not available":c[1]?"POSITIVE":"negative"}`));
+  if(av.length<2)return{grade:"Insufficient data",cls:"warn",steps,zh:"資料不足"};
+  if(pos>av.length/2){steps.push(`${pos}/${av.length} positive (>50%) → diastolic dysfunction. Grade it with the reduced-EF branch.`);const r=diastolicGrade(Object.assign({},v,{ef:"reduced"}));return{grade:r.grade,cls:r.cls,steps:steps.concat(r.steps),zh:r.zh}}
+  if(pos<av.length/2){steps.push(`${pos}/${av.length} positive (<50%) → normal diastolic function`);return{grade:"Normal diastolic function",cls:"ok",steps,zh:"舒張功能正常"}}
+  steps.push("Exactly 50% positive → indeterminate");return{grade:"Indeterminate",cls:"warn",steps,zh:"不確定"}}
+ const EA=(ok(v.E)&&ok(v.A)&&v.A>0)?v.E/v.A:null;steps.push(`E/A = ${fmt(EA,2)}, E = ${fmt(v.E)} cm/s`);
+ if(EA==null)return{grade:"Need E and A",cls:"warn",steps,zh:"需要 E 和 A"};
+ if(EA<=0.8&&v.E<=50){steps.push("E/A ≤0.8 and E ≤50 → normal LAP");return{grade:"Grade I — impaired relaxation, normal LAP",cls:"warn",steps,zh:"I 級：鬆弛受損、左房壓正常"}}
+ if(EA>=2){steps.push("E/A ≥2 → raised LAP");return{grade:"Grade III — restrictive filling, raised LAP",cls:"bad",steps,zh:"III 級：限制性充盈、左房壓升高"}}
+ steps.push("Intermediate E/A → check three criteria");
+ const c3=[["Average E/e′ >14",EeAvg==null?null:EeAvg>14],["TR >2.8 m/s",ok(v.tr)?v.tr>2.8:null],["LAVI >34",ok(v.lavi)?v.lavi>34:null]];
+ c3.forEach(c=>steps.push(`${c[0]}: ${c[1]===null?"not available":c[1]?"POSITIVE":"negative"}`));
+ const av=c3.filter(c=>c[1]!==null),pos=av.filter(c=>c[1]).length,neg=av.length-pos;
+ if(av.length===3||av.length===2&&pos!==neg){if(pos>=2)return{grade:"Grade II — pseudonormal, raised LAP",cls:"bad",steps,zh:"II 級：假性正常、左房壓升高"};
+  if(neg>=2)return{grade:"Grade I — impaired relaxation, normal LAP",cls:"warn",steps,zh:"I 級：鬆弛受損、左房壓正常"};}
+ return{grade:"Indeterminate LAP",cls:"warn",steps,zh:"左房壓不確定"}}
+function wDiastolic(el){
+ const fields=[["E","E velocity","cm/s",100],["A","A velocity","cm/s",60],["sep","Septal e′","cm/s",5],["lat","Lateral e′","cm/s",7],["tr","TR Vmax","m/s",3.0],["lavi","LAVI","mL/m²",40]];
+ el.innerHTML=`<div class="row"><span class="label">Diastolic grading tool · ASE 2016 algorithm</span></div><div class="row" role="group" aria-label="LVEF"><button class="chip" data-ef="normal" aria-pressed="true">EF normal</button><button class="chip" data-ef="reduced" aria-pressed="false">EF reduced / myocardial disease</button></div><div class="calc"><div class="inputs">${fields.map(f=>`<label for="dd-${f[0]}">${f[1]} (${f[2]})<input id="dd-${f[0]}" type="number" step="any" value="${f[3]}"></label>`).join("")}</div></div><div class="tree-node" id="ddOut"></div><p class="cite">Example values are pre-filled. Change them to practise. Leave a box empty if the value is not available.</p>`;
+ let ef="normal";const run=()=>{const v={ef};fields.forEach(f=>{const x=$("#dd-"+f[0],el).value;v[f[0]]=x===""?null:+x});const r=diastolicGrade(v);
+  $("#ddOut",el).innerHTML=`<div class="row"><span class="pill ${r.cls}">Result</span><h3>${r.grade}</h3></div>${zh(r.zh)}<div class="steps">${r.steps.join("\n")}</div>`};
+ $$(".chip",el).forEach(c=>c.addEventListener("click",()=>{ef=c.dataset.ef;$$(".chip",el).forEach(x=>x.setAttribute("aria-pressed",x===c));run()}));
+ $$("input",el).forEach(i=>i.addEventListener("input",run));run()}
+
+/* ---------- physics lab ---------- */
+function wPhysics(el){
+ const S=[["f","Transducer frequency","MHz",1,10,.5,2.5],["cyc","Cycles per pulse","",1,4,1,2],["depth","Imaging depth","cm",4,24,1,16],["lines","Scan lines per frame","",32,256,8,128],["fz","Focal zones","",1,4,1,1]];
+ el.innerHTML=`<div class="row"><span class="label">Physics lab · drag the sliders</span></div><div class="ctrl">${S.map(s=>`<label for="ph-${s[0]}">${s[1]} <output id="pho-${s[0]}"></output><input id="ph-${s[0]}" type="range" min="${s[3]}" max="${s[4]}" step="${s[5]}" value="${s[6]}"></label>`).join("")}</div><div id="phSvg"></div><div class="readout" id="phRo"></div>`;
+ const run=()=>{const v={};S.forEach(s=>{v[s[0]]=+$("#ph-"+s[0],el).value;$("#pho-"+s[0],el).textContent=v[s[0]]+(s[2]?" "+s[2]:"")});
+  const lam=1.54/v.f,spl=lam*v.cyc,ax=spl/2,prf=77000/v.depth,prp=1e6/prf,fr=77000/(v.depth*v.lines*v.fz),att=0.5*v.f*v.depth*2;
+  const pen=Math.min(24,60/(v.f*0.5*2));// depth where round-trip loss ≈60 dB
+  // svg: pulse wave + penetration strip
+  const W=600,pxmm=60;let path="";const n=v.cyc,wl=lam*pxmm;const x0=20;
+  for(let i=0;i<=n*40;i++){const x=x0+i*wl/40;const y=40-22*Math.sin(i/40*2*Math.PI)*Math.sin(Math.PI*i/(n*40));path+=(i?"L":"M")+x.toFixed(1)+","+y.toFixed(1)}
+  const sx=d=>20+d*(W-40)/24;let grad="";for(let d=0;d<24;d+=0.5){const loss=0.5*v.f*d*2;const o=Math.max(0,1-loss/60);grad+=`<rect x="${sx(d)}" y="92" width="${sx(.5)-20+.6}" height="26" fill="var(--bmode)" fill-opacity="${(o*.85).toFixed(2)}"/>`}
+  $("#phSvg",el).innerHTML=`<svg viewBox="0 0 ${W} 150" width="${W}" role="img" aria-label="Pulse length and penetration"><text x="20" y="12" font-size="11" font-family="var(--f-mono)" fill="var(--muted)">Pulse (SPL ${fmt(spl,2)} mm, drawn at 60 px/mm)</text><path d="${path}" fill="none" stroke="var(--away)" stroke-width="2.5"/><line x1="${x0}" y1="68" x2="${x0+spl*pxmm}" y2="68" stroke="var(--toward)" stroke-width="2"/><text x="${x0+spl*pxmm+6}" y="72" font-size="11" font-family="var(--f-mono)" fill="var(--toward)">SPL</text><text x="20" y="88" font-size="11" font-family="var(--f-mono)" fill="var(--muted)">Echo strength with depth (fades as round-trip attenuation nears 60 dB)</text>${grad}<line x1="${sx(v.depth)}" y1="88" x2="${sx(v.depth)}" y2="124" stroke="var(--toward)" stroke-width="2" stroke-dasharray="4 3"/><text x="${sx(v.depth)}" y="138" text-anchor="middle" font-size="11" font-family="var(--f-mono)" fill="var(--toward)">depth ${v.depth} cm</text>${[0,6,12,18,24].map(d=>`<text x="${sx(d)}" y="148" text-anchor="middle" font-size="10" font-family="var(--f-mono)" fill="var(--faint)">${d}</text>`).join("")}</svg>`;
+  const ro=[["Wavelength",fmt(lam,2)+" mm"],["SPL",fmt(spl,2)+" mm"],["Axial resolution",fmt(ax,2)+" mm"],["Max PRF",fmt(prf/1000,2)+" kHz"],["PRP",fmt(prp,0)+" µs"],["Frame rate",fmt(fr,0)+" fps",fr<30],["Round-trip loss",fmt(att,0)+" dB",att>60],["Useful depth ≈",fmt(pen,1)+" cm",pen<v.depth]];
+  $("#phRo",el).innerHTML=ro.map(r=>`<div class="ro ${r[2]?"hot":""}"><b>${r[1]}</b><span>${r[0]}</span></div>`).join("")};
+ $$("input",el).forEach(i=>i.addEventListener("input",run));run()}
+
+/* ---------- Nyquist / aliasing ---------- */
+function wNyquist(el){
+ const S=[["v","True peak velocity","m/s",.2,3,.05,1.2],["prf","PRF (scale)","kHz",1,15,.5,5],["f0","Transducer frequency","MHz",1.5,5,.1,2.5],["ang","Angle to flow","°",0,60,1,0],["base","Baseline shift up","%",-60,60,5,0]];
+ el.innerHTML=`<div class="row"><span class="label">PW aliasing simulator</span></div><div class="ctrl">${S.map(s=>`<label for="ny-${s[0]}">${s[1]} <output id="nyo-${s[0]}"></output><input id="ny-${s[0]}" type="range" min="${s[3]}" max="${s[4]}" step="${s[5]}" value="${s[6]}"></label>`).join("")}</div><div id="nySvg" style="overflow-x:auto"></div><div class="readout" id="nyRo"></div>`;
+ const run=()=>{const v={};S.forEach(s=>{v[s[0]]=+$("#ny-"+s[0],el).value;$("#nyo-"+s[0],el).textContent=v[s[0]]+" "+s[2]});
+  const c=1540,cos=Math.cos(v.ang*Math.PI/180);const vmeas=v.v*cos;const shiftHz=2*v.f0*1e6*vmeas/c;const nyqHz=v.prf*1000/2;
+  const vny=c*v.prf*1000/(4*v.f0*1e6);const top=vny*(1-v.base/100),bot=-vny*(1+v.base/100),range=top-bot;
+  const W=600,H=200,y0=10,y1=190;const vy=x=>y0+(top-x)/(range)*(y1-y0);
+  let lines="";const beat=x=>{const t=(x%200)/200;return t<.35?Math.sin(t/.35*Math.PI):0};
+  for(let x=0;x<W;x+=2){const vel=-vmeas*beat(x);// flow away (below baseline) like LVOT
+   if(vel===0)continue;let disp=vel;if(vel<bot){lines+=`<line x1="${x}" y1="${vy(0)}" x2="${x}" y2="${vy(bot)}" stroke="var(--fg)" stroke-opacity=".75"/>`;disp=vel+range;lines+=`<line x1="${x}" y1="${vy(top)}" x2="${x}" y2="${vy(Math.max(disp,0))}" stroke="var(--toward)" stroke-opacity=".9"/>`}
+   else lines+=`<line x1="${x}" y1="${vy(0)}" x2="${x}" y2="${vy(disp)}" stroke="var(--fg)" stroke-opacity=".75"/>`}
+  const aliased=vmeas>-bot+1e-9;
+  $("#nySvg",el).innerHTML=`<svg viewBox="0 0 ${W+60} ${H}" width="${W+60}" role="img" aria-label="Spectral Doppler display"><rect x="0" y="${y0}" width="${W}" height="${y1-y0}" fill="var(--bg)" stroke="var(--line)"/>${lines}<line x1="0" y1="${vy(0)}" x2="${W}" y2="${vy(0)}" stroke="var(--away)" stroke-width="1.5"/><text x="${W+6}" y="${y0+10}" font-size="11" font-family="var(--f-mono)" fill="var(--muted)">+${fmt(top,2)}</text><text x="${W+6}" y="${vy(0)+4}" font-size="11" font-family="var(--f-mono)" fill="var(--away)">0</text><text x="${W+6}" y="${y1}" font-size="11" font-family="var(--f-mono)" fill="var(--muted)">${fmt(bot,2)}</text><text x="${W+6}" y="${H/2+30}" font-size="10" font-family="var(--f-mono)" fill="var(--faint)">m/s</text></svg>`;
+  $("#nyRo",el).innerHTML=[["Doppler shift",fmt(shiftHz/1000,2)+" kHz"],["Nyquist (PRF/2)",fmt(nyqHz/1000,2)+" kHz"],["Max measurable V",fmt(vny,2)+" m/s"],["Measured V (cos θ)",fmt(vmeas,2)+" m/s"],["Underestimation",fmt((1-cos)*100,0)+"%",v.ang>20],["Status",aliased?"ALIASING":"No aliasing",aliased]].map(r=>`<div class="ro ${r[2]?"hot":""}"><b>${r[1]}</b><span>${r[0]}</span></div>`).join("")};
+ $$("input",el).forEach(i=>i.addEventListener("input",run));run()}
+
+/* ---------- artefact gallery ---------- */
+const ARTS=[
+ ["Reverberation","Two strong reflectors bounce sound back and forth: equally spaced parallel lines deep to the real one.","混響：兩強反射面間來回反射，形成等距平行線。",`<line x1="20" y1="30" x2="100" y2="30" stroke="var(--fg)" stroke-width="3"/><line x1="20" y1="50" x2="100" y2="50" stroke="var(--fg)" stroke-width="2" opacity=".6"/><line x1="20" y1="70" x2="100" y2="70" stroke="var(--fg)" stroke-width="2" opacity=".35"/><line x1="20" y1="90" x2="100" y2="90" stroke="var(--fg)" stroke-width="2" opacity=".2"/>`],
+ ["Comet tail / ring-down","Closely spaced reverberations from a small, very strong reflector (calcium, metal, prosthesis) form a tapering bright tail.","彗星尾：小而強的反射體引起密集混響。",`<circle cx="60" cy="25" r="5" fill="var(--fg)"/><path d="M57,30 L63,30 L61,100 L59,100Z" fill="var(--fg)" opacity=".5"/>`],
+ ["Mirror image","A strong specular reflector (pericardium, diaphragm) creates a duplicate placed DEEPER than the real structure.","鏡像：強鏡面反射體後方（更深處）出現複製影像。",`<line x1="15" y1="62" x2="105" y2="62" stroke="var(--fg)" stroke-width="3"/><circle cx="60" cy="38" r="12" fill="var(--away)" opacity=".7"/><circle cx="60" cy="86" r="12" fill="var(--away)" opacity=".3"/>`],
+ ["Refraction","Beam bends at an oblique boundary with a speed change: a side-by-side (lateral) duplicate.","折射：並排（橫向）出現重複影像。",`<circle cx="45" cy="60" r="12" fill="var(--away)" opacity=".7"/><circle cx="78" cy="60" r="12" fill="var(--away)" opacity=".3"/><line x1="20" y1="30" x2="100" y2="38" stroke="var(--muted)" stroke-dasharray="3 3"/>`],
+ ["Side & grating lobes","Off-axis energy returns from a strong reflector and is placed in the main beam path: a curved line or ghost lateral to the real structure. Side lobes from single elements, grating lobes from arrays.","旁瓣/柵瓣：偏軸能量把強反射體錯置於主聲束方向。",`<path d="M20,60 Q60,48 100,60" fill="none" stroke="var(--fg)" stroke-width="2" opacity=".45"/><circle cx="60" cy="30" r="6" fill="var(--fg)"/>`],
+ ["Acoustic shadowing","Strong attenuation (calcium, prosthetic material) removes echoes behind it.","聲影：強衰減物後方無回聲。",`<rect x="50" y="22" width="20" height="10" fill="var(--fg)"/><rect x="50" y="32" width="20" height="78" fill="var(--bg)" stroke="var(--line)"/><rect x="18" y="32" width="32" height="78" fill="var(--bmode)" opacity=".25"/><rect x="70" y="32" width="32" height="78" fill="var(--bmode)" opacity=".25"/>`],
+ ["Enhancement","Weak attenuation (fluid) makes structures behind it brighter.","增強：液體衰減少，後方回聲增強。",`<circle cx="60" cy="38" r="14" fill="var(--bg)" stroke="var(--line)"/><rect x="18" y="54" width="84" height="56" fill="var(--bmode)" opacity=".2"/><rect x="46" y="54" width="28" height="56" fill="var(--bmode)" opacity=".5"/>`],
+ ["Range ambiguity","High PRF: an echo from a previous pulse returns after the next pulse is sent and is placed too shallow.","距離模糊：上一脈衝的回波被放在過淺位置。",`<circle cx="60" cy="96" r="8" fill="var(--away)" opacity=".7"/><circle cx="60" cy="34" r="8" fill="var(--away)" opacity=".3"/><path d="M60,88 L60,44" stroke="var(--muted)" stroke-dasharray="3 3"/>`],
+ ["Near-field clutter","Reverberation and transducer ringing in the near field obscure the apex; reduce with harmonics or contrast.","近場雜訊：心尖附近雜亂回聲，可用諧波或造影改善。",`<rect x="20" y="20" width="80" height="26" fill="var(--bmode)" opacity=".35"/><path d="M20,46 Q60,110 100,46" fill="none" stroke="var(--fg)" stroke-width="2"/>`],
+ ["Slice thickness","Beam has thickness; structures beside the scan plane fill in echo-free spaces (false debris in cysts or the aorta).","切片厚度：掃描平面旁的結構填入無回聲區。",`<rect x="30" y="30" width="60" height="70" rx="20" fill="var(--bg)" stroke="var(--line)"/><rect x="34" y="80" width="52" height="16" rx="6" fill="var(--bmode)" opacity=".3"/>`],
+ ["Speed error","Structures are placed too deep when sound travels slower than 1540 m/s (fat), too shallow when faster.","聲速誤差：介質慢於 1540 m/s 時位置過深。",`<line x1="20" y1="58" x2="100" y2="58" stroke="var(--fg)" stroke-width="2"/><line x1="44" y1="58" x2="76" y2="70" stroke="var(--toward)" stroke-width="2"/>`],
+ ["Doppler mirroring (crosstalk)","Spectrum appears on both sides of the baseline; caused by high gain or a ~90° angle.","頻譜鏡像：增益過高或角度約 90°。",`<line x1="15" y1="60" x2="105" y2="60" stroke="var(--away)"/><path d="M20,60 Q35,28 50,60 M60,60 Q75,28 90,60" fill="none" stroke="var(--fg)"/><path d="M20,60 Q35,92 50,60 M60,60 Q75,92 90,60" fill="none" stroke="var(--fg)" opacity=".4"/>`]];
+function wArtifacts(el){el.innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))">${ARTS.map(a=>`<div class="panel" style="padding:12px;display:flex;flex-direction:column;gap:6px"><svg viewBox="0 0 120 115" width="120" height="115" role="img" aria-label="${a[0]} sketch"><rect x="1" y="1" width="118" height="113" rx="6" fill="var(--bg)" stroke="var(--line)"/>${a[3]}</svg><h4>${a[0]}</h4><p style="font-size:.88rem">${a[1]}</p>${zh(a[2])}</div>`).join("")}</div>`}
+
+const WIDGETS={bullseye:wBullseye,views:wViews,diastolic:wDiastolic,physics:wPhysics,nyquist:wNyquist,artifacts:wArtifacts};
+const CSA=d=>0.785*d*d;
+const grade=(x,cuts)=>{for(const c of cuts)if(c[0](x))return c[1];return["—","info"]};
+const CALCS=[
+{id:"bern",d:"D",t:"Pressure gradient (Bernoulli)",zh:"壓差（伯努利方程）",formula:"ΔP = 4(V₂² − V₁²)",in:[["v2","Peak velocity V₂","m/s",4],["v1","Proximal velocity V₁ (optional)","m/s",""]],
+ f:v=>{const v1=v.v1||0;const p=4*(v.v2**2-v1**2);return{val:fmt(p,0),unit:"mmHg",steps:`4 × (${v.v2}² − ${v1}²) = 4 × ${fmt(v.v2**2-v1**2,2)} = ${fmt(p,1)} mmHg`+(v1>1.5?"":v1?"\nV₁ ≤1.5 m/s: the simplified 4V₂² is usually acceptable":"")}}},
+{id:"rvsp",d:"D",t:"RVSP / PASP",zh:"右室收縮壓",formula:"RVSP = 4 × TR Vmax² + RAP",in:[["tr","TR peak velocity","m/s",3.2],["rap","RA pressure (3, 8 or 15)","mmHg",8]],
+ f:v=>{const p=4*v.tr**2+v.rap;return{val:fmt(p,0),unit:"mmHg",tag:v.tr>3.4?["High probability of PH (TR >3.4)","bad"]:v.tr>2.8?["Intermediate: TR >2.8 m/s","warn"]:["TR ≤2.8 m/s: PH unlikely on velocity","ok"],steps:`4 × ${v.tr}² = ${fmt(4*v.tr**2,1)}\n+ RAP ${v.rap} = ${fmt(p,1)} mmHg`}}},
+{id:"ava",d:"C",t:"Aortic valve area (continuity)",zh:"主動脈瓣面積（連續方程）",formula:"AVA = 0.785 × D² × VTI_LVOT ÷ VTI_AV",in:[["d","LVOT diameter","cm",2.0],["lv","LVOT VTI","cm",22],["av","AV VTI","cm",100],["bsa","BSA (optional)","m²",1.8]],
+ f:v=>{const csa=CSA(v.d),ava=csa*v.lv/v.av,dvi=v.lv/v.av,avai=v.bsa?ava/v.bsa:null;
+  return{val:fmt(ava,2),unit:"cm²",tag:grade(ava,[[x=>x<1,["Severe AS (<1.0)","bad"]],[x=>x<=1.5,["Moderate AS (1.0–1.5)","warn"]],[x=>true,["Mild (>1.5)","ok"]]]),
+  steps:`LVOT CSA = 0.785 × ${v.d}² = ${fmt(csa,2)} cm²\nSV = ${fmt(csa,2)} × ${v.lv} = ${fmt(csa*v.lv,1)} mL\nAVA = ${fmt(csa*v.lv,1)} ÷ ${v.av} = ${fmt(ava,2)} cm²\nDVI = ${v.lv} ÷ ${v.av} = ${fmt(dvi,2)}${dvi<.25?"  (<0.25 severe)":""}`+(avai?`\nAVAi = ${fmt(avai,2)} cm²/m²${avai<.6?"  (<0.6 severe)":""}`:"")}}},
+{id:"mva",d:"C",t:"Mitral valve area (PHT)",zh:"二尖瓣面積（壓力半衰期）",formula:"MVA = 220 ÷ PHT",in:[["pht","Pressure half-time","ms",200]],
+ f:v=>{const m=220/v.pht;return{val:fmt(m,2),unit:"cm²",tag:grade(m,[[x=>x<1,["Severe (<1.0)","bad"]],[x=>x<=1.5,["Moderate (1.0–1.5); severe by ACC/AHA 2020","warn"]],[x=>true,["Mild / no MS","ok"]]]),steps:`220 ÷ ${v.pht} = ${fmt(m,2)} cm²\nDeceleration time ≈ PHT ÷ 0.29 = ${fmt(v.pht/0.29,0)} ms`}}},
+{id:"pisa",d:"C",t:"PISA — MR EROA & regurgitant volume",zh:"PISA 法：有效反流口面積及反流量",formula:"EROA = 2πr² × Va ÷ Vmax · RVol = EROA × VTI",in:[["r","PISA radius","cm",0.9],["va","Aliasing velocity","cm/s",40],["vm","MR peak velocity","cm/s",500],["vti","MR VTI","cm",150]],
+ f:v=>{const flow=2*Math.PI*v.r**2*v.va,eroa=flow/v.vm,rv=eroa*v.vti;return{val:fmt(eroa,2),unit:"cm² EROA",tag:grade(eroa,[[x=>x>=.4,["Severe (EROA ≥0.40)","bad"]],[x=>x>=.2,["Moderate (0.20–0.39)","warn"]],[x=>true,["Mild (<0.20)","ok"]]]),
+  steps:`Flow = 2π × ${v.r}² × ${v.va} = ${fmt(flow,0)} mL/s\nEROA = ${fmt(flow,0)} ÷ ${v.vm} = ${fmt(eroa,2)} cm²\nRVol = ${fmt(eroa,2)} × ${v.vti} = ${fmt(rv,0)} mL${rv>=60?"  (≥60 severe)":""}`}}},
+{id:"sv",d:"D",t:"Stroke volume & cardiac output",zh:"每搏量與心輸出量",formula:"SV = 0.785 × D² × VTI · CO = SV × HR",in:[["d","LVOT diameter","cm",2.0],["vti","LVOT VTI","cm",20],["hr","Heart rate","bpm",70],["bsa","BSA","m²",1.8]],
+ f:v=>{const sv=CSA(v.d)*v.vti,co=sv*v.hr/1000,ci=co/v.bsa;return{val:fmt(co,1),unit:"L/min",tag:ci<2.2?["Low CI ("+fmt(ci,1)+")","bad"]:["CI "+fmt(ci,1)+" L/min/m²","ok"],steps:`CSA = ${fmt(CSA(v.d),2)} cm²\nSV = ${fmt(CSA(v.d),2)} × ${v.vti} = ${fmt(sv,1)} mL (SVi ${fmt(sv/v.bsa,0)} mL/m²)\nCO = ${fmt(sv,1)} × ${v.hr} = ${fmt(co,2)} L/min\nCI = ${fmt(co,2)} ÷ ${v.bsa} = ${fmt(ci,2)} L/min/m²`}}},
+{id:"qpqs",d:"D",t:"Shunt ratio Qp:Qs",zh:"分流比 Qp:Qs",formula:"Qp:Qs = (RVOT CSA × VTI) ÷ (LVOT CSA × VTI)",in:[["rd","RVOT diameter","cm",2.6],["rv","RVOT VTI","cm",24],["ld","LVOT diameter","cm",2.0],["lv","LVOT VTI","cm",20]],
+ f:v=>{const qp=CSA(v.rd)*v.rv,qs=CSA(v.ld)*v.lv,r=qp/qs;return{val:fmt(r,2),unit:": 1",tag:r>1.5?["Significant L→R shunt (>1.5)","bad"]:r<1?["Qp<Qs: consider R→L shunt","warn"]:["Not significant","ok"],steps:`Qp = 0.785 × ${v.rd}² × ${v.rv} = ${fmt(qp,1)} mL\nQs = 0.785 × ${v.ld}² × ${v.lv} = ${fmt(qs,1)} mL\nQp:Qs = ${fmt(r,2)}`}}},
+{id:"mass",d:"D",t:"LV mass & geometry (ASE linear)",zh:"左室質量與幾何形態",formula:"Mass = 0.8 × 1.04 × [(IVS+LVID+PW)³ − LVID³] + 0.6",in:[["ivs","IVSd","cm",1.2],["lvid","LVIDd","cm",5.0],["pw","PWd","cm",1.1],["bsa","BSA","m²",1.8],["sex","Sex (1 = male, 2 = female)","",1]],
+ f:v=>{const m=0.8*1.04*((v.ivs+v.lvid+v.pw)**3-v.lvid**3)+0.6,mi=m/v.bsa,rwt=2*v.pw/v.lvid,lim=v.sex==2?95:115,hi=mi>lim,thick=rwt>0.42;
+  const geo=hi?(thick?"Concentric hypertrophy":"Eccentric hypertrophy"):(thick?"Concentric remodeling":"Normal geometry");
+  return{val:fmt(mi,0),unit:"g/m²",tag:[geo,hi?"bad":thick?"warn":"ok"],steps:`Mass = 0.832 × [(${fmt(v.ivs+v.lvid+v.pw,2)})³ − ${v.lvid}³] + 0.6 = ${fmt(m,0)} g\nIndex = ${fmt(m,0)} ÷ ${v.bsa} = ${fmt(mi,0)} g/m² (limit ${lim})\nRWT = 2 × ${v.pw} ÷ ${v.lvid} = ${fmt(rwt,2)} (cut-off 0.42)`}}},
+{id:"lap",d:"D",t:"LA pressure & LVEDP",zh:"左房壓與左室舒張末壓",formula:"LAP = SBP − 4V²(MR) · LVEDP = DBP − 4V²(AR end-diastole)",in:[["sbp","Systolic BP","mmHg",120],["mr","MR peak velocity","m/s",5],["dbp","Diastolic BP","mmHg",70],["ar","AR end-diastolic velocity","m/s",3]],
+ f:v=>{const lap=v.sbp-4*v.mr**2,ed=v.dbp-4*v.ar**2;return{val:fmt(lap,0)+" / "+fmt(ed,0),unit:"mmHg (LAP / LVEDP)",tag:lap>15||ed>15?["Raised filling pressure","bad"]:["Normal range","ok"],steps:`LAP = ${v.sbp} − 4 × ${v.mr}² = ${fmt(lap,0)} mmHg\nLVEDP = ${v.dbp} − 4 × ${v.ar}² = ${fmt(ed,0)} mmHg\nValid only without AS / LVOT obstruction`}}},
+{id:"dpdt",d:"D",t:"LV dP/dt (MR jet)",zh:"左室 dP/dt",formula:"dP/dt = 32 mmHg ÷ Δt (1 → 3 m/s)",in:[["dt","Time from 1 to 3 m/s","ms",25]],
+ f:v=>{const r=32/(v.dt/1000);return{val:fmt(r,0),unit:"mmHg/s",tag:r>1200?["Normal (>1200)","ok"]:r>=800?["Reduced","warn"]:["Severely reduced (<800)","bad"],steps:`ΔP = 4×3² − 4×1² = 36 − 4 = 32 mmHg\n32 ÷ ${v.dt/1000} s = ${fmt(r,0)} mmHg/s`}}},
+{id:"range",d:"E",t:"Physics: wavelength, depth & frame rate",zh:"物理：波長、深度與幀率",formula:"λ = 1.54 ÷ f · depth = 0.77 × t(µs)/1000 · FR = 77,000 ÷ (depth × lines × foci)",in:[["f","Frequency","MHz",2.5],["d","Depth","cm",16],["lines","Lines per frame","",128],["fz","Focal zones","",1]],
+ f:v=>{const lam=1.54/v.f,fr=77000/(v.d*v.lines*v.fz),rt=v.d*13;return{val:fmt(fr,0),unit:"frames/s",tag:fr<30?["Low temporal resolution","warn"]:["OK for 2D","ok"],steps:`λ = 1.54 ÷ ${v.f} = ${fmt(lam,2)} mm\nRound trip to ${v.d} cm = ${rt} µs (13 µs/cm)\nMax PRF = 77,000 ÷ ${v.d} = ${fmt(77000/v.d,0)} Hz\nFrame rate = 77,000 ÷ (${v.d} × ${v.lines} × ${v.fz}) = ${fmt(fr,1)} fps\nAttenuation (round trip) = 0.5 × ${v.f} × ${v.d*2} = ${fmt(v.f*v.d,0)} dB`}}}
+];
+/* ---------- progress store ---------- */
+const LS_KEY="rcs-echo-lab-v1";
+let S={notes:{},cards:{},quiz:{},exam:"",runs:[],updated:0};
+try{const raw=localStorage.getItem(LS_KEY);if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+let dbRef=null,writing=false,pending=false,saveTimer=null;
+function setSync(t){const el=$("#syncState");if(el)el.textContent=t}
+function save(){S.updated=Date.now();try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}
+ if(!dbRef)return;clearTimeout(saveTimer);saveTimer=setTimeout(flush,1500)}
+async function flush(){if(!dbRef)return;if(writing){pending=true;return}writing=true;
+ try{await dbRef.set(JSON.parse(JSON.stringify(S)));setSync("Progress synced to your account")}catch(e){setSync(e&&e.code==="invalid_argument"?"Progress: this browser only":"Sync paused — saved in this browser")}
+ writing=false;if(pending){pending=false;flush()}}
+(async()=>{try{if(!window.claude||!window.claude.use)return;const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);if(!db||!user)return;
+ const uid=await user.id();if(!uid)return;dbRef=db.doc("data/users/"+uid+"/progress");
+ const snap=await dbRef.get();if(snap.exists){const d=snap.data();if((d.updated||0)>(S.updated||0)){S=Object.assign({notes:{},cards:{},quiz:{},exam:"",runs:[]},JSON.parse(JSON.stringify(d)));try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}current="";route()}else if((S.updated||0)>(d.updated||0))flush()}
+ else if(S.updated)flush();setSync("Progress synced to your account")}catch(e){setSync("Progress: this browser")}})();
+
+/* ---------- stats ---------- */
+const SECTIONS=Object.fromEntries(DOMAINS.map(d=>[d.id,NOTES[d.id]]));
+function domainStats(id){const secs=SECTIONS[id]||[];const nd=secs.filter(s=>S.notes[s.id]).length;
+ const qs=QUIZ.filter(q=>q.d===id);const seen=qs.filter(q=>S.quiz[q.id]);const right=seen.filter(q=>S.quiz[q.id].last).length;
+ const cs=CARDS.filter(c=>c.d===id);const mastered=cs.filter(c=>S.cards[c.id]&&S.cards[c.id].iv>=4).length;
+ const notesP=secs.length?nd/secs.length:0,quizP=qs.length?right/qs.length:0,cardP=cs.length?mastered/cs.length:0;
+ return{nd,ns:secs.length,qn:qs.length,seen:seen.length,right,acc:seen.length?right/seen.length:null,cn:cs.length,mastered,ready:(notesP+quizP+cardP)/3}}
+
+/* ---------- router ---------- */
+const VIEWS_R={dash:renderDash,notes:renderNotes,calc:renderCalc,cards:renderCards,quiz:renderQuiz,cheat:renderCheat};
+let current="";
+function route(){let h=(location.hash||"#dash").slice(1);let v=h.split("-")[0];if(!VIEWS_R[v]){v="dash"}
+ const main=$("#main");if(v!==current||!main.firstChild){current=v;main.innerHTML="";VIEWS_R[v](main,h);window.scrollTo(0,0)}
+ $$(".nav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.v===v||(a.dataset.also||"").split(" ").includes(v))&&a.setAttribute("aria-current","page"))}
+window.addEventListener("hashchange",route);
+document.addEventListener("keydown",e=>{if(e.target.closest("input,select,textarea"))return;if(e.metaKey||e.ctrlKey||e.altKey)return;
+ const map={"1":"dash","2":"notes","3":"calc","4":"cards","5":"quiz","6":"cheat"};if(map[e.key]&&!(current==="cards"&&["1","2","3"].includes(e.key)&&cardShown)&&!(current==="quiz"&&quizActive)){location.hash=map[e.key]}});
+const zt=$("#zhToggle");try{const z=localStorage.getItem("rcs-zh");if(z==="0")zt.checked=false}catch(e){}
+document.body.classList.toggle("show-zh",zt.checked);
+zt.addEventListener("change",()=>{document.body.classList.toggle("show-zh",zt.checked);try{localStorage.setItem("rcs-zh",zt.checked?"1":"0")}catch(e){}});
+
+/* ---------- dashboard ---------- */
+function renderDash(m){
+ const st=DOMAINS.map(d=>Object.assign({d},domainStats(d.id)));const maxW=Math.max(...DOMAINS.map(d=>d.w));
+ const days=S.exam?Math.ceil((new Date(S.exam+"T09:00")-new Date())/864e5):null;
+ const unseen=CARDS.filter(c=>!S.cards[c.id]).length,dueNow=CARDS.filter(c=>S.cards[c.id]&&S.cards[c.id].due<=Date.now()).length;
+ const qSeen=Object.keys(S.quiz).length,qRight=Object.values(S.quiz).filter(x=>x.last).length;
+ const weak=st.filter(s=>s.seen>=3).sort((a,b)=>a.acc-b.acc).slice(0,3);
+ const nextSec=DOMAINS.map(d=>SECTIONS[d.id].find(s=>!S.notes[s.id])&&[d,SECTIONS[d.id].find(s=>!S.notes[s.id])]).find(Boolean);
+ m.innerHTML=`<section class="view">
+ <div class="bear-hero"><img src="img/bears-balloons.jpg" alt="Bubu and Dudu with balloons"><div><span class="label">Bubu &amp; Dudu study buddies</span><h2>Ace the RCS together!</h2><p>One card, one question at a time. 一齊加油！</p></div></div><div class="view-head"><span class="label">CCI · Registered Cardiac Sonographer</span><h1>Your RCS study console</h1><p>Notes, tools, flashcards and practice questions ordered by how much each domain counts on the exam. ${zh("按考試比重排列的筆記、工具、記憶卡和練習題。")}</p></div>
+ <div class="facts"><div class="fact"><b class="num">170</b><span>items · 150 scored + 20 pilot</span></div><div class="fact"><b class="num">3 h</b><span>2 h 50 min of questions</span></div><div class="fact"><b class="num">650</b><span>pass mark on a 0–900 scale</span></div><div class="fact"><b>Pearson</b><span>VUE test centres, year-round</span></div></div>
+ <div class="grid g2">
+  <div class="panel stack"><div class="row" style="justify-content:space-between"><h3>Exam countdown</h3>${days!=null?`<span class="pill ${days<14?"bad":days<45?"warn":"info"}">${days>=0?days+" days":"past"}</span>`:""}</div>
+   <label class="label" for="examDate">Exam date</label><input id="examDate" type="date" value="${S.exam||""}" style="border:1px solid var(--line);border-radius:7px;padding:7px;background:var(--bg)">
+   <p style="font-size:.9rem;color:var(--muted)">${days>0?`To see every flashcard once before the exam: about <b class="num" style="color:var(--fg)">${Math.ceil(unseen/days)}</b> new cards a day, plus reviews.`:"Set your date to get a daily card target."}</p></div>
+  <div class="panel stack"><h3>Today</h3>
+   <div class="readout"><div class="ro"><b>${dueNow}</b><span>cards due</span></div><div class="ro"><b>${unseen}</b><span>new cards</span></div><div class="ro"><b>${qSeen?Math.round(qRight/qSeen*100)+"%":"—"}</b><span>quiz accuracy (${qSeen} answered)</span></div></div>
+   <div class="row">${dueNow?`<a class="btn primary" href="#cards">Review ${dueNow} due cards</a>`:`<a class="btn primary" href="#cards">Start flashcards</a>`}${nextSec?`<a class="btn" href="#notes-${nextSec[0].id}-${nextSec[1].id}">Next note: ${nextSec[1].t}</a>`:""}</div></div>
+ </div>
+ <div class="panel stack"><div class="row" style="justify-content:space-between"><h2>Exam blueprint & readiness</h2><div class="legend"><span><i style="background:var(--away-soft);border:1px solid var(--away)"></i>Exam weight</span><span><i style="background:var(--away)"></i>Your readiness</span></div></div>
+  <div class="bp">${st.map(s=>`<div class="bp-row"><span class="bp-name">${s.d.id}. ${s.d.name} ${zh(s.d.zh)}</span><span class="bp-pct">${s.d.id==="A"?"5–9%":s.d.w+"%"}</span>
+   <div class="bp-track" title="Bar length = exam weight"><div class="bp-w" style="width:${s.d.w/maxW*100}%"></div><div class="bp-p" style="width:${s.d.w/maxW*s.ready*100}%"></div></div>
+   <div class="bp-meta"><span>Notes ${s.nd}/${s.ns}</span><span>Quiz ${s.acc==null?"not started":Math.round(s.acc*100)+"% of "+s.seen}</span><span>Cards mastered ${s.mastered}/${s.cn}</span><a href="#notes-${s.d.id}">Open notes</a></div></div>`).join("")}</div>
+  <p class="cite">Readiness = average of notes reviewed, questions answered correctly, and cards mastered (interval ≥4 days). Domain A is listed as 5% in CCI's 2023 overview and 9% on some prep sites — verify on cci-online.org.</p></div>
+ <div class="grid g2">
+  <div class="panel stack"><h3>Weakest areas</h3>${weak.length?weak.map(w=>`<div class="row" style="justify-content:space-between"><span>${w.d.name}</span><span class="pill ${w.acc<.6?"bad":w.acc<.8?"warn":"ok"}">${Math.round(w.acc*100)}%</span></div>`).join("")+`<a class="btn" href="#quiz">Drill missed questions</a>`:`<p style="color:var(--muted)">Answer at least 3 questions in a domain to see it ranked here.</p>`}</div>
+  <div class="panel stack"><h3>How to use this</h3><ol class="bul"><li>Read a note section, then tick “Reviewed”.</li><li>Do flashcards daily — rate honestly; “Again” brings a card back.</li><li>Quiz by domain, then do a timed blueprint mix weekly.</li><li>Use the calculators until you can do each formula by hand.</li></ol>${zh("先讀筆記並標記已複習；每天做記憶卡；按領域練習，每週做一次限時模擬。")}</div>
+ </div>
+ <p class="cite">Exam facts from CCI's RCS overview and current exam-prep summaries; fees, timing and item types can change. Check <a href="https://cci-online.org" target="_blank" rel="noopener">cci-online.org</a> before booking. All questions here are original practice items, not real exam questions.</p>
+ <div class="bear-hugs"><img src="img/hug-1.jpg" alt="Bear hug"><img src="img/hug-2.jpg" alt="Bear cuddle"><img src="img/hug-3.jpg" alt="Bear snuggle"></div></section>`;
+ $("#examDate",m).addEventListener("change",e=>{S.exam=e.target.value;save();current="";route()})}
+
+/* ---------- notes ---------- */
+function renderBlock(b){
+ if(b.b)return`<ul class="bul">${b.b.map(x=>`<li>${x[0]}${zh(x[1])}</li>`).join("")}</ul>`;
+ if(b.table){const t=b.table;return`<div class="tbl-wrap"><table><thead><tr>${t.head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${(t.sev||[]).includes(i)?"sev":""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${t.cite?`<p class="cite">${t.cite}</p>`:""}`}
+ if(b.pearl)return`<div class="callout pearl"><span class="label">Pearl</span><span>${b.pearl[0]}</span>${zh(b.pearl[1])}</div>`;
+ if(b.pit)return`<div class="callout pit"><span class="label">Pitfall</span><span>${b.pit[0]}</span>${zh(b.pit[1])}</div>`;
+ if(b.widget)return`<div class="widget" data-w="${b.widget}"></div>`;return""}
+function renderNotes(m,h){const parts=h.split("-");let dom=parts[1]&&NOTES[parts[1]]?parts[1]:"D";const anchor=parts.length>2?parts.slice(2).join("-"):null;
+ const d=DOMAINS.find(x=>x.id===dom);const secs=NOTES[dom];
+ m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Study notes · domain ${d.id} · ${d.id==="A"?"5–9":d.w}% of exam</span><h1>${d.name}</h1>${zh(d.zh)}</div>
+ <div class="domain-tabs" role="group" aria-label="Domains">${DOMAINS.map(x=>`<a class="chip" href="#notes-${x.id}" aria-pressed="${x.id===dom}">${x.short} · ${x.id==="A"?"5–9":x.w}%</a>`).join("")}</div>
+ <nav class="toc" aria-label="Sections">${secs.map(s=>`<a href="#notes-${dom}-${s.id}" class="${S.notes[s.id]?"done":""}" data-sec="${s.id}">${S.notes[s.id]?"✓ ":""}${s.t}</a>`).join("")}</nav>
+ ${secs.map(s=>`<article class="sec" id="${s.id}"><div class="sec-head"><div><h2>${s.t}</h2>${zh(s.zh)}</div><label class="check"><input type="checkbox" data-sec="${s.id}" ${S.notes[s.id]?"checked":""}> Reviewed</label></div>${s.blocks.map(renderBlock).join("")}</article>`).join("")}
+ <div class="row">${(()=>{const i=DOMAINS.findIndex(x=>x.id===dom);const nx=DOMAINS[(i+1)%DOMAINS.length];return`<a class="btn" href="#quiz-${dom}">Quiz this domain</a><a class="btn primary" href="#notes-${nx.id}">Next: ${nx.short} →</a>`})()}</div></section>`;
+ $$(".widget",m).forEach(w=>WIDGETS[w.dataset.w]&&WIDGETS[w.dataset.w](w));
+ $$('input[type=checkbox][data-sec]',m).forEach(c=>c.addEventListener("change",()=>{if(c.checked)S.notes[c.dataset.sec]=Date.now();else delete S.notes[c.dataset.sec];save();
+  const a=$(`.toc a[data-sec="${c.dataset.sec}"]`,m);const s=secs.find(x=>x.id===c.dataset.sec);a.classList.toggle("done",c.checked);a.textContent=(c.checked?"✓ ":"")+s.t}));
+ $$(".toc a",m).forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=document.getElementById(a.dataset.sec);t&&t.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});history.replaceState(null,"",a.getAttribute("href"))}));
+ if(anchor){const t=document.getElementById(anchor);t&&setTimeout(()=>t.scrollIntoView(),30)}}
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(current==="notes"){const p=h.split("-");const dom=p[1];const shown=$(".view-head h1");const d=DOMAINS.find(x=>x.id===dom);if(d&&shown&&shown.textContent!==d.name){current="";route()}else if(p.length>2){const t=document.getElementById(p.slice(2).join("-"));t&&t.scrollIntoView()}else if(d&&shown&&shown.textContent===d.name){}}});
+
+/* ---------- calculators ---------- */
+function renderCalc(m){
+ m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Calculators</span><h1>Formula workbench</h1><p>Every calculator shows its working, so you can check yourself doing it by hand. Values are pre-filled with a worked example. ${zh("每個計算器都會顯示計算步驟，方便你練習手算。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-pressed="true">Calculators</a><a class="chip" href="#cheat" aria-pressed="false">Cheat sheet</a></div>
+ <div class="grid g2">${CALCS.map(c=>`<div class="panel calc" data-c="${c.id}"><div><span class="label">${DOMAINS.find(d=>d.id===c.d).short}</span><h3>${c.t}</h3>${zh(c.zh)}</div><div class="formula">${c.formula}</div><div class="inputs">${c.in.map(i=>`<label for="c-${c.id}-${i[0]}">${i[1]}${i[2]?" ("+i[2]+")":""}<input id="c-${c.id}-${i[0]}" type="number" step="any" value="${i[3]}"></label>`).join("")}</div><div class="result"></div><div class="steps"></div></div>`).join("")}</div></section>`;
+ CALCS.forEach(c=>{const box=$(`[data-c="${c.id}"]`,m);const run=()=>{const v={};let bad=false;c.in.forEach(i=>{const x=$(`#c-${c.id}-${i[0]}`,box).value;v[i[0]]=x===""?0:+x;if(x===""&&i[3]!=="")bad=true});
+  if(bad){$(".result",box).innerHTML=`<span style="color:var(--muted)">Enter all values to calculate.</span>`;$(".steps",box).textContent="";return}
+  const r=c.f(v);$(".result",box).innerHTML=`<b class="num">${r.val}</b><span>${r.unit}</span>${r.tag?`<span class="pill ${r.tag[1]}">${r.tag[0]}</span>`:""}`;$(".steps",box).textContent=r.steps};
+  $$("input",box).forEach(i=>i.addEventListener("input",run));run()})}
+
+/* ---------- flashcards (SRS) ---------- */
+let cardShown=false;
+function renderCards(m){let filter="all",queue=[],cur=null;
+ m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Flashcards · spaced repetition</span><h1>Recall drill</h1><p>Flip the card, then rate yourself. “Again” repeats it this session; “Good” and “Easy” push it further into the future. ${zh("翻卡後自評：「再來」本次會重現，「良好」「容易」會延後複習。")}</p></div>
+ <div class="row" role="group" aria-label="Filter by domain"><button class="chip" data-f="all" aria-pressed="true">All</button>${DOMAINS.map(d=>`<button class="chip" data-f="${d.id}" aria-pressed="false">${d.short}</button>`).join("")}</div>
+ <div class="readout" id="cStats"></div><div id="cStage"></div><p class="cite keys">Keys: Space = flip · 1 Again · 2 Good · 3 Easy</p><p class="cite swipe">Tap to flip · after flipping, swipe right = Good, left = Again</p></section>`;
+ const pool=()=>CARDS.filter(c=>filter==="all"||c.d===filter);
+ const build=()=>{const now=Date.now();const p=pool();const due=p.filter(c=>S.cards[c.id]&&S.cards[c.id].due<=now).sort((a,b)=>S.cards[a.id].due-S.cards[b.id].due);const nw=shuffle(p.filter(c=>!S.cards[c.id]));queue=due.concat(nw.slice(0,20));stats();next()};
+ const stats=()=>{const p=pool(),now=Date.now();const due=p.filter(c=>S.cards[c.id]&&S.cards[c.id].due<=now).length,nw=p.filter(c=>!S.cards[c.id]).length,ms=p.filter(c=>S.cards[c.id]&&S.cards[c.id].iv>=4).length;
+  $("#cStats",m).innerHTML=`<div class="ro"><b>${queue.length}</b><span>in this session</span></div><div class="ro"><b>${due}</b><span>due now</span></div><div class="ro"><b>${nw}</b><span>never seen</span></div><div class="ro"><b>${ms}/${p.length}</b><span>mastered (≥4 days)</span></div>`};
+ const next=()=>{cur=queue.shift();cardShown=false;const st=$("#cStage",m);
+  if(!cur){st.innerHTML=`<div class="panel stack" style="align-items:flex-start"><h3>Session done</h3><p>No cards are due in this set. Come back later, or study new cards from another domain.</p>${zh("本組沒有到期卡片。")}<button class="btn primary" id="more">Load 20 more new cards</button></div>`;$("#more",st).onclick=build;return}
+  const d=DOMAINS.find(x=>x.id===cur.d);const s=S.cards[cur.id];
+  st.innerHTML=`<div class="stack"><div class="card-stage"><div class="fcard" id="fc" tabindex="0" role="button" aria-label="Flip card"><div class="face"><div class="meta"><span class="label">${d.short}</span><span class="label">${s?"review":"new"}</span></div><div class="q">${cur.f}</div><span style="color:var(--faint);font-size:.85rem">Tap or press Space to flip</span></div><div class="face back"><div class="meta"><span class="label">Answer</span></div><div class="q" style="font-size:1rem;color:var(--muted)">${cur.f}</div><div class="a">${cur.b}</div>${zh(cur.zh)}</div></div></div>
+  <div class="srs" id="srs" hidden><button class="btn" data-r="1">Again<small>&lt;1 min</small></button><button class="btn" data-r="2">Good<small>${ivl(cur,2)}</small></button><button class="btn" data-r="3">Easy<small>${ivl(cur,3)}</small></button></div></div>`;
+  const fc=$("#fc",st);const flip=()=>{fc.classList.toggle("flip");cardShown=true;$("#srs",st).hidden=false};fc.onclick=()=>{if(fc._sw)return;flip()};let sx=null,sy=null;fc.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;fc._sw=false},{passive:true});
+  fc.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(cardShown&&Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){fc._sw=true;fc.style.transition="transform .25s";fc.style.transform=`translateX(${dx>0?120:-120}%) rotateY(180deg)`;setTimeout(()=>rate(dx>0?2:1),220)}});fc.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();flip()}};
+  $$("#srs .btn",st).forEach(b=>b.onclick=()=>rate(+b.dataset.r))};
+ const nextIv=(c,r)=>{const s=S.cards[c.id]||{iv:0,ef:2.5};if(r===2)return s.iv?Math.max(1,Math.round(s.iv*s.ef)):1;return s.iv?Math.max(4,Math.round(s.iv*s.ef*1.4)):4};
+ const ivl=(c,r)=>{const d=nextIv(c,r);return d===1?"1 day":d+" days"};
+ const rate=r=>{if(!cur)return;const s=S.cards[cur.id]||{iv:0,ef:2.5,n:0};s.n=(s.n||0)+1;
+  if(r===1){s.iv=0;s.ef=Math.max(1.3,s.ef-.2);s.due=Date.now()+60e3;queue.splice(Math.min(3,queue.length),0,cur)}
+  else{s.iv=nextIv(cur,r);if(r===3)s.ef=Math.min(3,s.ef+.15);s.due=Date.now()+s.iv*864e5}
+  S.cards[cur.id]=s;save();stats();next()};
+ $$("[data-f]",m).forEach(b=>b.onclick=()=>{filter=b.dataset.f;$$("[data-f]",m).forEach(x=>x.setAttribute("aria-pressed",x===b));build()});
+ m._key=e=>{if(current!=="cards"||e.target.closest("input,select,textarea,button"))return;if(e.key===" "){e.preventDefault();$("#fc")&&$("#fc").click()}else if(cardShown&&["1","2","3"].includes(e.key))rate(+e.key)};
+ build()}
+document.addEventListener("keydown",e=>{const m=$("#main");m&&m._key&&current==="cards"&&m._key(e)});
+
+/* ---------- quiz ---------- */
+let quizActive=false;
+function pickBlueprint(n){const out=[];const tot=DOMAINS.reduce((a,d)=>a+d.w,0);DOMAINS.forEach(d=>{const k=Math.round(n*d.w/tot);out.push(...shuffle(QUIZ.filter(q=>q.d===d.id)).slice(0,k))});return shuffle(out).slice(0,n)}
+function renderQuiz(m,h){quizActive=false;const pre=h.split("-")[1];let mode=pre?"domain":"domain",dom=pre&&NOTES[pre]?pre:"all",count=10;
+ const misses=()=>QUIZ.filter(q=>S.quiz[q.id]&&!S.quiz[q.id].last);
+ const setup=()=>{quizActive=false;m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Practice quiz · ${QUIZ.length} original questions</span><h1>Question bank</h1><p>Exam-style items: single answer, multiple response, matching and hot-spot. Practice mode explains each answer straight away; the timed mix copies the exam blueprint and pace (about 1 minute per item). ${zh("練習模式即時解釋答案；限時模式按考試比重出題，每題約 1 分鐘。")}</p></div>
+  <div class="panel stack"><span class="label">Mode</span><div class="row" role="group"><button class="chip" data-m="domain" aria-pressed="${mode==="domain"}">Practice by domain</button><button class="chip" data-m="exam" aria-pressed="${mode==="exam"}">Timed blueprint mix</button><button class="chip" data-m="miss" aria-pressed="${mode==="miss"}">Review my misses (${misses().length})</button></div>
+  <div id="domPick" ${mode!=="domain"?"hidden":""}><span class="label">Domain</span><div class="row" role="group"><button class="chip" data-d="all" aria-pressed="${dom==="all"}">All</button>${DOMAINS.map(d=>`<button class="chip" data-d="${d.id}" aria-pressed="${dom===d.id}">${d.short} (${QUIZ.filter(q=>q.d===d.id).length})</button>`).join("")}</div></div>
+  <div id="cntPick" ${mode==="miss"?"hidden":""}><span class="label">Questions</span><div class="row" role="group">${[10,20,40,60].map(n=>`<button class="chip" data-n="${n}" aria-pressed="${count===n}">${n}</button>`).join("")}</div></div>
+  <div class="row"><button class="btn primary" id="go">Start</button></div></div>
+  ${S.runs&&S.runs.length?`<div class="panel stack"><h3>Recent sessions</h3>${S.runs.slice(-6).reverse().map(r=>`<div class="row" style="justify-content:space-between"><span>${new Date(r.at).toLocaleDateString()} · ${r.mode==="exam"?"Timed mix":r.mode==="miss"?"Misses":"Practice "+(r.dom==="all"?"all":r.dom)}</span><span class="pill ${r.pct>=75?"ok":r.pct>=60?"warn":"bad"}">${r.right}/${r.n} · ${r.pct}%</span></div>`).join("")}</div>`:""}</section>`;
+  $$("[data-m]",m).forEach(b=>b.onclick=()=>{mode=b.dataset.m;setup()});$$("[data-d]",m).forEach(b=>b.onclick=()=>{dom=b.dataset.d;setup()});$$("[data-n]",m).forEach(b=>b.onclick=()=>{count=+b.dataset.n;setup()});
+  $("#go",m).onclick=()=>{let qs;if(mode==="exam")qs=pickBlueprint(count);else if(mode==="miss")qs=shuffle(misses());else qs=shuffle(QUIZ.filter(q=>dom==="all"||q.d===dom)).slice(0,count);
+   if(!qs.length){$("#go",m).insertAdjacentHTML("afterend",`<span style="color:var(--muted)">No questions to review yet — answer some first.</span>`);return}run(qs)}};
+ const run=qs=>{quizActive=true;let i=0;const ans=[];const timed=mode==="exam";const t0=Date.now(),limit=qs.length*60e3;let tick=null;
+  const finish=()=>{clearInterval(tick);quizActive=false;const right=ans.filter(a=>a.ok).length;const pct=Math.round(right/qs.length*100);
+   S.runs=(S.runs||[]).concat([{at:Date.now(),mode,dom,n:qs.length,right,pct}]).slice(-30);save();
+   const byD=DOMAINS.map(d=>{const a=ans.filter(x=>x.q.d===d.id);return a.length?{d,n:a.length,r:a.filter(x=>x.ok).length}:null}).filter(Boolean);
+   m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Results</span><h1>${right} / ${qs.length} correct · ${pct}%</h1><p>${pct>=75?"Strong. Keep mixing domains.":pct>=60?"Close to passing level. Review the misses below.":"Below target. Re-read the notes for the domains marked red, then retry your misses."} The real exam is scaled; aim for 75%+ here.</p></div>
+    <div class="panel stack"><h3>By domain</h3>${byD.map(x=>`<div class="row" style="justify-content:space-between"><span>${x.d.name}</span><span class="pill ${x.r/x.n>=.75?"ok":x.r/x.n>=.6?"warn":"bad"}">${x.r}/${x.n}</span></div>`).join("")}</div>
+    ${ans.filter(a=>!a.ok).length?`<div class="stack"><h2>Review misses</h2>${ans.filter(a=>!a.ok).map(a=>`<div class="panel stack"><p class="q-stem">${a.q.q}</p><p><b>Answer:</b> ${answerText(a.q)}</p><div class="explain"><span>${a.q.e}</span>${zh(a.q.z)}</div><a href="#notes-${a.q.d}">Open ${DOMAINS.find(d=>d.id===a.q.d).short} notes</a></div>`).join("")}</div>`:""}
+    <div class="row"><button class="btn primary" id="again">New quiz</button></div></section>`;$("#again",m).onclick=setup};
+  const show=()=>{const q=qs[i];let sel=q.t==="multi"?new Set():null,checked=false;const prac=!timed;
+   m.innerHTML=`<section class="view"><div class="row" style="justify-content:space-between"><span class="label">Question ${i+1} of ${qs.length} · ${DOMAINS.find(d=>d.id===q.d).short}${q.t!=="mcq"?" · "+({multi:"select all that apply",match:"matching",hot:"hot spot"})[q.t]:""}</span>${timed?`<span class="timer" id="tmr"></span>`:""}</div><div class="qbar"><i style="width:${i/qs.length*100}%"></i></div>
+    <div class="panel stack"><p class="q-stem">${q.q}</p><div id="qBody"></div><div id="qExp"></div><div class="row"><button class="btn primary" id="qBtn">${q.t==="mcq"&&prac?"Choose an answer":"Check"}</button><button class="btn ghost" id="qQuit">End quiz</button></div></div></section>`;
+   const body=$("#qBody",m),btn=$("#qBtn",m);
+   if(timed){btn.textContent=i<qs.length-1?"Next":"Finish";const up=()=>{const left=Math.max(0,limit-(Date.now()-t0));const tm=$("#tmr");if(tm)tm.textContent=`${Math.floor(left/60000)}:${String(Math.floor(left/1000)%60).padStart(2,"0")} left`;if(left<=0){record(false,true);finish()}};clearInterval(tick);tick=setInterval(up,1000);up()}
+   if(q.t==="mcq"||q.t==="multi"){const order=shuffle(q.o.map((_,k)=>k));body.innerHTML=`<div class="opts">${order.map((k,pos)=>`<button class="opt" data-k="${k}" aria-pressed="false"><span class="key">${String.fromCharCode(65+pos)}</span><span>${q.o[k]}</span></button>`).join("")}</div>`;
+    $$(".opt",body).forEach(b=>b.onclick=()=>{if(checked)return;const k=+b.dataset.k;if(q.t==="multi"){sel.has(k)?sel.delete(k):sel.add(k);b.setAttribute("aria-pressed",sel.has(k))}else{sel=k;$$(".opt",body).forEach(x=>x.setAttribute("aria-pressed",x===b));if(prac)check()}})}
+   else if(q.t==="match"){const rights=shuffle(q.pairs.map(p=>p[1]));body.innerHTML=`<div class="match">${q.pairs.map((p,k)=>`<span class="term">${p[0]}</span><select id="mt-${k}" aria-label="Match for ${p[0]}"><option value="">Choose…</option>${rights.map(r=>`<option>${r}</option>`).join("")}</select>`).join("")}</div>`}
+   else if(q.t==="hot"){body.innerHTML=`<div class="row" style="justify-content:center">${bullseyeSVG({plain:true})}</div><p class="cite" style="text-align:center" id="hotSel">No segment selected</p>`;
+    $$(".seg",body).forEach(s=>s.addEventListener("click",()=>{if(checked)return;sel=+s.dataset.seg;$$(".seg",body).forEach(x=>{x.setAttribute("fill",x===s?"var(--away)":"var(--panel-2)")});$("#hotSel",body).textContent="Selected: segment "+sel}))}
+   const isRight=()=>{if(q.t==="mcq")return sel===q.a;if(q.t==="multi")return sel.size===q.a.length&&q.a.every(k=>sel.has(k));if(q.t==="hot")return q.a.includes(sel);
+    if(q.t==="match")return q.pairs.every((p,k)=>$("#mt-"+k,body).value===p[1]);return false};
+   const answered=()=>q.t==="mcq"||q.t==="hot"?sel!=null:q.t==="multi"?sel.size>0:q.pairs.every((p,k)=>$("#mt-"+k,body).value);
+   function record(ok,silent){const r=S.quiz[q.id]||{c:0,w:0};ok?r.c++:r.w++;r.last=ok;S.quiz[q.id]=r;ans.push({q,ok});save()}
+   function check(){if(!answered()){btn.textContent=q.t==="match"?"Match every item first":"Choose an answer first";return}checked=true;const ok=isRight();
+    if(q.t==="mcq"||q.t==="multi"){const A=q.t==="mcq"?[q.a]:q.a;$$(".opt",body).forEach(b=>{const k=+b.dataset.k;if(A.includes(k))b.classList.add("right");else if(b.getAttribute("aria-pressed")==="true")b.classList.add("wrong")})}
+    if(q.t==="match")q.pairs.forEach((p,k)=>{const s=$("#mt-"+k,body);s.classList.add(s.value===p[1]?"right":"wrong");s.disabled=true});
+    if(q.t==="hot")$$(".seg",body).forEach(x=>{const n=+x.dataset.seg;if(q.a.includes(n))x.setAttribute("fill","var(--ok)");else if(n===sel)x.setAttribute("fill","var(--toward)")});
+    record(ok);$("#qExp",m).innerHTML=`<div class="explain"><span class="pill ${ok?"ok":"bad"}">${ok?"Correct":"Not quite"}</span>${q.t==="match"&&!ok?`<span><b>Answer:</b> ${answerText(q)}</span>`:""}<span>${q.e}</span>${zh(q.z)}</div>`;
+    btn.textContent=i<qs.length-1?"Next question":"See results"}
+   btn.onclick=()=>{if(timed){if(!answered()){btn.textContent="Choose an answer first";setTimeout(()=>btn.textContent=i<qs.length-1?"Next":"Finish",1200);return}record(isRight());i++;i<qs.length?show():finish();return}
+    if(!checked){check();return}i++;i<qs.length?show():finish()};
+   $("#qQuit",m).onclick=()=>{if(!ans.length){clearInterval(tick);setup();return}qs=qs.slice(0,ans.length);finish()};
+   m._qkey=e=>{if(current!=="quiz"||!quizActive||e.target.closest("select,input"))return;if((q.t==="mcq"||q.t==="multi")&&/^[a-e]$/i.test(e.key)){const b=$$(".opt",body)[e.key.toLowerCase().charCodeAt(0)-97];b&&b.click()}else if(e.key==="Enter"&&!e.target.closest("button")){btn.click()}}};
+  show()};
+ setup()}
+document.addEventListener("keydown",e=>{const m=$("#main");m&&m._qkey&&current==="quiz"&&m._qkey(e)});
+function answerText(q){if(q.t==="mcq")return q.o[q.a];if(q.t==="multi")return q.a.map(k=>q.o[k]).join("; ");if(q.t==="match")return q.pairs.map(p=>p[0]+" → "+p[1]).join(" · ");if(q.t==="hot")return"Segment "+q.a.join(" or ")+" ("+SEGS[q.a[0]][0]+")";return""}
+
+/* ---------- cheat sheet ---------- */
+function findTable(secId,n=0){for(const d in NOTES)for(const s of NOTES[d])if(s.id===secId){return s.blocks.filter(b=>b.table)[n].table}}
+function mini(title,t,cols){const idx=cols||t.head.map((_,i)=>i);return`<div class="panel"><h4 style="margin-bottom:6px">${title}</h4><div class="tbl-wrap"><table><thead><tr>${idx.map(i=>`<th>${t.head[i]}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${idx.map(i=>`<td class="${(t.sev||[]).includes(i)?"sev":""}">${r[i]}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`}
+function renderCheat(m){
+ const phys={head:["Constant","Value"],rows:[["Speed in soft tissue","1540 m/s · 1.54 mm/µs"],["Depth timing","13 µs round trip per cm"],["Wavelength","λ (mm) = 1.54 ÷ f (MHz)"],["Attenuation","0.5 dB/cm/MHz"],["Axial resolution","SPL ÷ 2"],["Nyquist","PRF ÷ 2"],["Max PRF","77,000 ÷ depth (cm)"],["Frame rate","77,000 ÷ (depth × lines × foci)"],["Matching layer / crystal","λ/4 · λ/2"],["dB","+3 = ×2 · +10 = ×10"],["Angle error","20° = 6% · 30° = 13% · 60° = 50%"]]};
+ const stress={head:["Item","Value"],rows:[["Target HR","85% × (220 − age)"],["Treadmill images","≤60–90 s post exercise"],["Dobutamine","5/10→40 µg/kg/min, 3-min stages ± atropine"],["Bubble study PFO","LA bubbles ≤3 cycles"],["UEA","≥2 contiguous segments unseen · low MI 0.1–0.3"],["Tamponade","RA systolic collapse (sens.) · RV diastolic collapse (spec.)"],["PH","TR >2.8 m/s · AT <105 ms"]]};
+ m.innerHTML=`<section class="view" style="max-width:1100px"><div class="view-head"><span class="label">Cheat sheet</span><h1>One-page numbers</h1><p>The cut-offs most likely to be tested, on one screen. Severe columns are in red. ${zh("最常考的數值一覽，嚴重級別以紅色顯示。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-pressed="false">Calculators</a><a class="chip" href="#cheat" aria-pressed="true">Cheat sheet</a></div>
+ <div class="cheat">${mini("Aortic stenosis",findTable("c-as"))}${mini("Mitral regurgitation",findTable("c-mr"),[0,1,3])}${mini("Aortic regurgitation",findTable("c-ar"))}${mini("Mitral stenosis",findTable("c-ms"))}${mini("Tricuspid regurgitation",findTable("c-right"))}${mini("Chamber normals",findTable("d-chambers"),[0,1])}${mini("IVC → RAP",findTable("d-chambers",1))}${mini("Diastolic grades",findTable("d-diastolic"))}${mini("Prosthetic AV",findTable("c-pros"))}${mini("Prosthetic MV",findTable("c-pros",1))}${mini("Hemodynamic formulas",findTable("d-hemo"))}${mini("Physics constants",phys)}${mini("Procedures & quick signs",stress)}</div></section>`}
+
+route();
+
+})();
+</script>
+</body></html>
