@@ -98,7 +98,7 @@ main{padding-inline:clamp(16px,4vw,48px);padding-block:28px 80px;min-width:0}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:700;cursor:pointer}
 a.chip{text-decoration:none;color:var(--fg)}
-.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip[aria-pressed="true"],.chip[aria-current="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:.74rem;font-weight:700;font-family:var(--f-display);letter-spacing:.04em;text-transform:uppercase}
 .pill.ok{background:var(--ok-soft);color:var(--ok)}
 .pill.warn{background:var(--warn-soft);color:var(--warn)}
@@ -262,9 +262,9 @@ main>.view{position:relative}
 .btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--shadow)}
 .btn.primary{background:var(--cocoa);border-color:var(--ink);color:#fffaf0}
 .chip{border:2px solid var(--ink);font-family:var(--f-display);font-weight:600}
-.chip[aria-pressed="true"]{background:var(--sky);color:var(--ink);border-color:var(--ink)}
-:root[data-theme="dark"] .chip[aria-pressed="true"]{background:var(--away);color:#14262a}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{background:var(--away);color:#14262a}}
+.chip[aria-pressed="true"],.chip[aria-current="true"]{background:var(--sky);color:var(--ink);border-color:var(--ink)}
+:root[data-theme="dark"] .chip[aria-pressed="true"],.chip[aria-current="true"]{background:var(--away);color:#14262a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"],.chip[aria-current="true"]{background:var(--away);color:#14262a}}
 .pill{font-family:var(--f-display);font-weight:600;letter-spacing:.03em;border:1.5px solid currentColor}
 .toc a{border:2px solid var(--line);border-radius:999px;padding:3px 11px}
 .toc a.done{background:var(--ok-soft)}
@@ -333,17 +333,35 @@ h2{font-size:1.25rem}
 @media (min-width:700px){main{max-width:720px;margin-inline:auto}}
 </style>
 <style>
-/* Bubu & Dudu bear theme override */
-:root:not([data-theme="dark"]){--sky:#bfe6f7;--sky-2:#e3f4fc;--cream:#fff7f0;--butter:#ffe1a8;--cocoa:#a9785a;--blush:#ffc2cf;--grass:#cdebb4;--bg:#fff7f3;--panel:#ffffff;--panel-2:#fdeee9;--line:#f1d6cf;--away:#3b8fb8;--toward:#e0677f;--r:24px}
-html,body{background:linear-gradient(180deg,#e3f4fc 0,#fff7f3 420px) fixed}
+/* Bubu & Dudu bear theme override (light only; dark keeps its own palette) */
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--sky:#bfe6f7;--sky-2:#e3f4fc;--cream:#fff7f0;--butter:#ffe1a8;--cocoa:#8a5a3c;--blush:#ffc2cf;--grass:#cdebb4;--bg:#fff7f3;--panel:#ffffff;--panel-2:#fdeee9;--line:#e6c3ba;--muted:#6b5548;--faint:#75625a;--away:#21688c;--toward:#b23a55;--ok:#2f6f37;--warn:#86570a;--r:24px}}
+:root[data-theme="light"]{--sky:#bfe6f7;--sky-2:#e3f4fc;--cream:#fff7f0;--butter:#ffe1a8;--cocoa:#8a5a3c;--blush:#ffc2cf;--grass:#cdebb4;--bg:#fff7f3;--panel:#ffffff;--panel-2:#fdeee9;--line:#e6c3ba;--muted:#6b5548;--faint:#75625a;--away:#21688c;--toward:#b23a55;--ok:#2f6f37;--warn:#86570a;--r:24px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--faint:#b8a698;--muted:#d2c1b1}}
+:root[data-theme="dark"]{--faint:#b8a698;--muted:#d2c1b1}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) body{background:linear-gradient(180deg,#e3f4fc 0,#fff7f3 420px) fixed}}
+:root[data-theme="light"] body{background:linear-gradient(180deg,#e3f4fc 0,#fff7f3 420px) fixed}
+::placeholder{color:var(--muted);opacity:1}
+:focus-visible{outline:3px solid var(--away)!important;outline-offset:3px!important;border-radius:8px}
 .panel,.fact,.widget{border-radius:24px!important}
-.bear-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:center;background:#fff;border:3px solid #f6c9d3;border-radius:28px;padding:14px;margin:0 0 18px;box-shadow:0 6px 0 #f6c9d3}
+.bear-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:center;background:var(--panel);border:3px solid var(--blush);border-radius:28px;padding:14px;margin:0 0 18px;box-shadow:0 6px 0 var(--blush)}
 .bear-hero img{width:100%;border-radius:20px;display:block}
-.bear-hero h2{color:#a9785a}.bear-hero p{color:#7a6457;margin-top:6px}
+.bear-hero h2{color:var(--cocoa)}.bear-hero p{color:var(--muted);margin-top:6px}
+.bear-hero::after{content:"";position:absolute;right:16px;bottom:12px;width:70px;height:34px;background:url(img/bubu.svg) left/34px no-repeat,url(img/dudu.svg) right/34px no-repeat}
 .bear-hugs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
-.bear-hugs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:22px;border:3px solid #ffd9e1;background:#f0f0f0;transition:transform .2s}
+.bear-hugs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:22px;border:3px solid var(--blush);background:#f0f0f0;transition:transform .2s}
 .bear-hugs img:hover{transform:rotate(-3deg) scale(1.04)}
-@media(max-width:720px){.bear-hero{grid-template-columns:1fr}}
+/* woven-in bear decorations (decorative, CSS only) */
+.view-head{position:relative;padding-right:96px}
+.view-head::after{content:"";position:absolute;right:0;top:0;width:88px;height:46px;background:url(img/heart.svg) center 0/16px no-repeat,url(img/bubu.svg) left bottom/42px no-repeat,url(img/dudu.svg) right bottom/42px no-repeat;pointer-events:none}
+.brand-name::before{content:"";display:inline-block;width:26px;height:24px;margin-right:6px;vertical-align:-3px;background:url(img/dudu.svg) center/contain no-repeat}
+.panel{position:relative}
+.panel>h3:first-child::after,.panel>.row:first-child>h3::after{content:"";display:inline-block;width:20px;height:18px;margin-left:8px;vertical-align:-2px;background:url(img/bubu.svg) center/contain no-repeat}
+.grid>.panel:nth-child(even)>h3:first-child::after,.grid>.panel:nth-child(even)>.row:first-child>h3::after{background-image:url(img/dudu.svg)}
+.srs,.q,.opts{position:relative}
+.srs::before,.q::before{content:"";position:absolute;top:-26px;right:18px;width:46px;height:30px;background:url(img/bubu.svg) left bottom/28px no-repeat,url(img/heart.svg) right top/14px no-repeat;pointer-events:none}
+.bear-foot{margin:32px auto 90px;max-width:900px;text-align:center;color:var(--muted);font-family:var(--f-display);font-size:.9rem;padding:18px;border-top:2px dashed var(--line)}
+.bear-foot .pair{display:block;margin:0 auto 6px;width:110px;height:48px;background:url(img/bubu.svg) left bottom/46px no-repeat,url(img/heart.svg) center 4px/16px no-repeat,url(img/dudu.svg) right bottom/46px no-repeat}
+@media(max-width:720px){.bear-hero{grid-template-columns:1fr}.view-head{padding-right:0;padding-top:46px}}
 </style>
 <div class="app">
   <aside class="rail"></aside>
@@ -351,7 +369,7 @@ html,body{background:linear-gradient(180deg,#e3f4fc 0,#fff7f3 420px) fixed}
     <div class="brand-name">Shita<span>RCS Echo Lab</span></div>
     <label class="toggle"><span class="switch"><input type="checkbox" id="zhToggle" checked><span></span></span><span class="lbl">中文</span></label>
   </header>
-  <main id="main"></main>
+  <main id="main"></main><footer class="bear-foot"><span class="pair" aria-hidden="true"></span>Studying with Bubu &amp; Dudu · 一二布布陪你溫書</footer>
   <nav class="nav tabbar" aria-label="Study modes">
     <a href="#dash" data-v="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg>Home</a>
     <a href="#notes" data-v="notes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h7M9 14h7"/></svg>Notes</a>
@@ -1264,7 +1282,7 @@ function renderBlock(b){
 function renderNotes(m,h){const parts=h.split("-");let dom=parts[1]&&NOTES[parts[1]]?parts[1]:"D";const anchor=parts.length>2?parts.slice(2).join("-"):null;
  const d=DOMAINS.find(x=>x.id===dom);const secs=NOTES[dom];
  m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Study notes · domain ${d.id} · ${d.id==="A"?"5–9":d.w}% of exam</span><h1>${d.name}</h1>${zh(d.zh)}</div>
- <div class="domain-tabs" role="group" aria-label="Domains">${DOMAINS.map(x=>`<a class="chip" href="#notes-${x.id}" aria-pressed="${x.id===dom}">${x.short} · ${x.id==="A"?"5–9":x.w}%</a>`).join("")}</div>
+ <div class="domain-tabs" role="group" aria-label="Domains">${DOMAINS.map(x=>`<a class="chip" href="#notes-${x.id}" aria-current="${x.id===dom}">${x.short} · ${x.id==="A"?"5–9":x.w}%</a>`).join("")}</div>
  <nav class="toc" aria-label="Sections">${secs.map(s=>`<a href="#notes-${dom}-${s.id}" class="${S.notes[s.id]?"done":""}" data-sec="${s.id}">${S.notes[s.id]?"✓ ":""}${s.t}</a>`).join("")}</nav>
  ${secs.map(s=>`<article class="sec" id="${s.id}"><div class="sec-head"><div><h2>${s.t}</h2>${zh(s.zh)}</div><label class="check"><input type="checkbox" data-sec="${s.id}" ${S.notes[s.id]?"checked":""}> Reviewed</label></div>${s.blocks.map(renderBlock).join("")}</article>`).join("")}
  <div class="row">${(()=>{const i=DOMAINS.findIndex(x=>x.id===dom);const nx=DOMAINS[(i+1)%DOMAINS.length];return`<a class="btn" href="#quiz-${dom}">Quiz this domain</a><a class="btn primary" href="#notes-${nx.id}">Next: ${nx.short} →</a>`})()}</div></section>`;
@@ -1277,7 +1295,7 @@ window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(curr
 
 /* ---------- calculators ---------- */
 function renderCalc(m){
- m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Calculators</span><h1>Formula workbench</h1><p>Every calculator shows its working, so you can check yourself doing it by hand. Values are pre-filled with a worked example. ${zh("每個計算器都會顯示計算步驟，方便你練習手算。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-pressed="true">Calculators</a><a class="chip" href="#cheat" aria-pressed="false">Cheat sheet</a></div>
+ m.innerHTML=`<section class="view"><div class="view-head"><span class="label">Calculators</span><h1>Formula workbench</h1><p>Every calculator shows its working, so you can check yourself doing it by hand. Values are pre-filled with a worked example. ${zh("每個計算器都會顯示計算步驟，方便你練習手算。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-current="true">Calculators</a><a class="chip" href="#cheat" aria-current="false">Cheat sheet</a></div>
  <div class="grid g2">${CALCS.map(c=>`<div class="panel calc" data-c="${c.id}"><div><span class="label">${DOMAINS.find(d=>d.id===c.d).short}</span><h3>${c.t}</h3>${zh(c.zh)}</div><div class="formula">${c.formula}</div><div class="inputs">${c.in.map(i=>`<label for="c-${c.id}-${i[0]}">${i[1]}${i[2]?" ("+i[2]+")":""}<input id="c-${c.id}-${i[0]}" type="number" step="any" value="${i[3]}"></label>`).join("")}</div><div class="result"></div><div class="steps"></div></div>`).join("")}</div></section>`;
  CALCS.forEach(c=>{const box=$(`[data-c="${c.id}"]`,m);const run=()=>{const v={};let bad=false;c.in.forEach(i=>{const x=$(`#c-${c.id}-${i[0]}`,box).value;v[i[0]]=x===""?0:+x;if(x===""&&i[3]!=="")bad=true});
   if(bad){$(".result",box).innerHTML=`<span style="color:var(--muted)">Enter all values to calculate.</span>`;$(".steps",box).textContent="";return}
@@ -1370,7 +1388,7 @@ function mini(title,t,cols){const idx=cols||t.head.map((_,i)=>i);return`<div cla
 function renderCheat(m){
  const phys={head:["Constant","Value"],rows:[["Speed in soft tissue","1540 m/s · 1.54 mm/µs"],["Depth timing","13 µs round trip per cm"],["Wavelength","λ (mm) = 1.54 ÷ f (MHz)"],["Attenuation","0.5 dB/cm/MHz"],["Axial resolution","SPL ÷ 2"],["Nyquist","PRF ÷ 2"],["Max PRF","77,000 ÷ depth (cm)"],["Frame rate","77,000 ÷ (depth × lines × foci)"],["Matching layer / crystal","λ/4 · λ/2"],["dB","+3 = ×2 · +10 = ×10"],["Angle error","20° = 6% · 30° = 13% · 60° = 50%"]]};
  const stress={head:["Item","Value"],rows:[["Target HR","85% × (220 − age)"],["Treadmill images","≤60–90 s post exercise"],["Dobutamine","5/10→40 µg/kg/min, 3-min stages ± atropine"],["Bubble study PFO","LA bubbles ≤3 cycles"],["UEA","≥2 contiguous segments unseen · low MI 0.1–0.3"],["Tamponade","RA systolic collapse (sens.) · RV diastolic collapse (spec.)"],["PH","TR >2.8 m/s · AT <105 ms"]]};
- m.innerHTML=`<section class="view" style="max-width:1100px"><div class="view-head"><span class="label">Cheat sheet</span><h1>One-page numbers</h1><p>The cut-offs most likely to be tested, on one screen. Severe columns are in red. ${zh("最常考的數值一覽，嚴重級別以紅色顯示。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-pressed="false">Calculators</a><a class="chip" href="#cheat" aria-pressed="true">Cheat sheet</a></div>
+ m.innerHTML=`<section class="view" style="max-width:1100px"><div class="view-head"><span class="label">Cheat sheet</span><h1>One-page numbers</h1><p>The cut-offs most likely to be tested, on one screen. Severe columns are in red. ${zh("最常考的數值一覽，嚴重級別以紅色顯示。")}</p></div><div class="row" role="group" aria-label="Tools"><a class="chip" href="#calc" aria-current="false">Calculators</a><a class="chip" href="#cheat" aria-current="true">Cheat sheet</a></div>
  <div class="cheat">${mini("Aortic stenosis",findTable("c-as"))}${mini("Mitral regurgitation",findTable("c-mr"),[0,1,3])}${mini("Aortic regurgitation",findTable("c-ar"))}${mini("Mitral stenosis",findTable("c-ms"))}${mini("Tricuspid regurgitation",findTable("c-right"))}${mini("Chamber normals",findTable("d-chambers"),[0,1])}${mini("IVC → RAP",findTable("d-chambers",1))}${mini("Diastolic grades",findTable("d-diastolic"))}${mini("Prosthetic AV",findTable("c-pros"))}${mini("Prosthetic MV",findTable("c-pros",1))}${mini("Hemodynamic formulas",findTable("d-hemo"))}${mini("Physics constants",phys)}${mini("Procedures & quick signs",stress)}</div></section>`}
 
 route();
