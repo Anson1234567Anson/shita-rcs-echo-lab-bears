@@ -1,0 +1,14 @@
+const t=require('node:test'),assert=require('node:assert');const F=require('../formulas.js');
+const near=(a,b,tol)=>assert.ok(Math.abs(a-b)<=tol,`${a} vs ${b}`);
+t.test('Bernoulli 4v²',()=>{near(F.bernoulli(3.5),49,1e-9);near(F.bernoulli(4),64,1e-9);near(F.velFromGradient(64),4,1e-9)});
+t.test('Angle error: 20°≈6%, 30°≈13%, 60°=50%',()=>{near(F.underestimatePct(20),6,0.1);near(F.underestimatePct(30),13.4,0.1);near(F.underestimatePct(60),50,1e-9)});
+t.test('Doppler shift: 2.5 MHz, 1 m/s, 0° ≈ 3.25 kHz',()=>near(F.dopplerShiftKHz(2.5,1,0),3.247,0.01));
+t.test('Max PRF 77/depth',()=>near(F.maxPRFkHz(15),5.13,0.01));
+t.test('Nyquist: PRF 5 kHz, 2.5 MHz → ~0.77 m/s',()=>near(F.nyquistVel(5,2.5),0.77,0.005));
+t.test('Alias wrap',()=>{near(F.aliasWrap(1.0,0.77),-0.54,0.001);near(F.aliasWrap(0.5,0.77),0.5,1e-9);near(F.aliasWrap(1.0,0.77,0.5),1.0,1e-9)});
+t.test('PISA worked example r 0.9, Va 40, Vmax 500 → EROA ≈ 0.41',()=>{near(F.eroa(0.9,40,500),0.407,0.002);near(F.rvol(0.407,150),61,0.5);near(F.pisaRadius(0.407,500,40),0.9,0.002)});
+t.test('MR grades',()=>{assert.equal(F.mrGrade(0.45),'severe');assert.equal(F.mrGrade(0.1),'mild');assert.equal(F.mrGrade(0.3),'moderate');assert.equal(F.mrGradeRVol(65),'severe')});
+t.test('Continuity: LVOT 2.0 cm, VTI 20/80 → AVA 0.79',()=>{near(F.continuityAVA(2,20,80),0.785,0.002);near(F.dvi(20,80),0.25,1e-9)});
+t.test('AS model: SV 70, EOA 1.0, ET 0.3 → Vmax ≈ 3.9, mean ≈ 36',()=>{const v=F.asVmax(70,1,0.3);near(v,3.89,0.02);near(F.meanFromVmax(v),36.3,0.5)});
+t.test('Low flow SVi <35',()=>{assert.ok(F.lowFlow(30));assert.ok(!F.lowFlow(40))});
+t.test('PV coupling: EDV 120, Ees 2, Ea 2, V0 10 → ESV 65, EF 46%',()=>{near(F.esv(120,2,2,10),65,1e-9);near(F.pes(120,2,2,10),110,1e-9);near(F.ef(120,65),45.8,0.1)});
